@@ -324,10 +324,8 @@ mod tests {
             assert!(craft_state.play_action(a as usize));
         }
 
-        assert_eq!(
-            ACTIONS[ActionID::NameOfTheElements].validate(&craft_state),
-            false
-        );
+        let action_mask = craft_state.get_valid_action_mask();
+        assert_eq!(action_mask[ActionID::NameOfTheElements as usize], false);
     }
 
     #[test]
@@ -566,9 +564,11 @@ mod tests {
         assert!(craft_state.play_action(ActionID::MuscleMemory as usize));
         for (step_state, should_be_valid) in validations {
             craft_state.set_next_step_outcome(0.0, step_state);
+
+            let action_mask = craft_state.get_valid_action_mask();
             assert_eq!(
-                ACTIONS[ActionID::TricksOfTheTrade].validate(&craft_state),
-                should_be_valid,
+                action_mask[ActionID::TricksOfTheTrade as usize],
+                should_be_valid
             );
         }
     }
@@ -592,9 +592,11 @@ mod tests {
         assert!(craft_state.play_action(ActionID::MuscleMemory as usize));
         for (step_state, should_be_valid) in validations {
             craft_state.set_next_step_outcome(0.0, step_state);
+
+            let action_mask = craft_state.get_valid_action_mask();
             assert_eq!(
-                ACTIONS[ActionID::PreciseTouch].validate(&craft_state),
-                should_be_valid,
+                action_mask[ActionID::PreciseTouch as usize],
+                should_be_valid
             );
         }
     }
@@ -619,9 +621,11 @@ mod tests {
 
         for (step_state, should_be_valid) in validations {
             craft_state.set_next_step_outcome(0.0, step_state);
+
+            let action_mask = craft_state.get_valid_action_mask();
             assert_eq!(
-                ACTIONS[ActionID::IntensiveSynthesis].validate(&craft_state),
-                should_be_valid,
+                action_mask[ActionID::IntensiveSynthesis as usize],
+                should_be_valid
             );
         }
     }
@@ -726,7 +730,9 @@ mod tests {
 
         for (a, next_state, next_rng) in actions_to_execute {
             craft_state.set_next_step_outcome(next_rng as u8 as f32, next_state);
-            assert!(ACTIONS[a].validate(&craft_state));
+
+            let action_mask = craft_state.get_valid_action_mask();
+            assert!(action_mask[a as usize]);
             craft_state.play_action(a as usize);
         }
 
