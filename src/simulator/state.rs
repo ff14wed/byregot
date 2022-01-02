@@ -1,7 +1,7 @@
 use super::tables;
 use std::hash::{Hash, Hasher};
 
-use super::action::{ACTIONS, NUM_ACTIONS, get_valid_action_mask, Change};
+use super::action::{get_valid_action_mask, Change, ACTIONS, NUM_ACTIONS};
 
 use rand::distributions::WeightedIndex;
 use rand::prelude::*;
@@ -258,7 +258,7 @@ impl CraftState {
       ),
       _ => (
         &[StepState::Normal, StepState::Good, StepState::Excellent],
-        &[0.35, 0.25, 0.40],
+        &[0.71, 0.25, 0.04],
       ),
     }
   }
@@ -325,8 +325,8 @@ impl CraftState {
   pub fn play_action(&mut self, action_id: usize) -> bool {
     let valid_action = ACTIONS[action_id].validate(self);
     if valid_action {
-        ACTIONS[action_id].execute(self);
-        return true;
+      ACTIONS[action_id].execute(self);
+      return true;
     }
     return false;
   }
