@@ -16,7 +16,6 @@ pub enum ActionID {
     MastersMend,
     HastyTouch,
     RapidSynthesis,
-    InnerQuiet,
     Observe,
     TricksOfTheTrade,
     WasteNot,
@@ -24,15 +23,12 @@ pub enum ActionID {
     StandardTouch,
     GreatStrides,
     Innovation,
-    NameOfTheElements,
-    BrandOfTheElements,
     FinalAppraisal,
     WasteNotII,
     ByregotsBlessing,
     PreciseTouch,
     MuscleMemory,
     CarefulSynthesis,
-    PatientTouch,
     Manipulation,
     PrudentTouch,
     FocusedSynthesis,
@@ -42,6 +38,9 @@ pub enum ActionID {
     Groundwork,
     DelicateSynthesis,
     IntensiveSynthesis,
+    AdvancedTouch,
+    PrudentSynthesis,
+    TrainedFinesse,
 }
 
 impl Index<ActionID> for ActionList {
@@ -104,6 +103,11 @@ mod tests {
     };
 
     #[test]
+    fn action_list_is_populated() {
+        assert_eq!(ACTIONS.len(), ActionID::TrainedFinesse as usize + 1);
+    }
+
+    #[test]
     fn novice_rotation() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
         let actions_to_execute = vec![
@@ -112,7 +116,6 @@ mod tests {
             ActionID::CarefulSynthesis,
             ActionID::FinalAppraisal,
             ActionID::CarefulSynthesis,
-            ActionID::InnerQuiet,
             ActionID::WasteNotII,
             ActionID::PreparatoryTouch,
             ActionID::PreparatoryTouch,
@@ -165,7 +168,6 @@ mod tests {
         let mut craft_state = R510_PARAMS.new_craft();
         let actions_to_execute = vec![
             ActionID::MuscleMemory,
-            ActionID::InnerQuiet,
             ActionID::Manipulation,
             ActionID::Veneration,
             ActionID::WasteNot,
@@ -211,13 +213,7 @@ mod tests {
             ..GENERIC_PARAMS
         };
         let mut craft_state = craft_params.new_craft();
-        let actions_to_execute = vec![
-            ActionID::InnerQuiet,
-            ActionID::Manipulation,
-            ActionID::NameOfTheElements,
-            ActionID::BrandOfTheElements,
-            ActionID::BasicTouch,
-        ];
+        let actions_to_execute = vec![ActionID::Manipulation, ActionID::BasicTouch];
 
         for a in actions_to_execute {
             assert!(craft_state.play_action(a as usize));
@@ -247,7 +243,6 @@ mod tests {
         };
         let mut craft_state = craft_params.new_craft();
         let actions_to_execute = vec![
-            ActionID::InnerQuiet,
             ActionID::PrudentTouch,
             ActionID::PrudentTouch,
             ActionID::PrudentTouch,
@@ -271,61 +266,6 @@ mod tests {
         }
 
         assert_eq!(craft_state.progress, 1344);
-    }
-
-    #[test]
-    fn name_of_elements_test1() {
-        let mut craft_state = GENERIC_PARAMS.new_craft();
-        let actions_to_execute = vec![
-            ActionID::MuscleMemory,
-            ActionID::NameOfTheElements,
-            ActionID::BrandOfTheElements,
-        ];
-
-        for a in actions_to_execute {
-            assert!(craft_state.play_action(a as usize));
-        }
-
-        assert_eq!(craft_state.progress, 2831);
-    }
-
-    #[test]
-    fn name_of_elements_test2() {
-        let mut craft_state = GENERIC_PARAMS.new_craft();
-
-        let actions_to_execute = vec![
-            ActionID::MuscleMemory,
-            ActionID::CarefulSynthesis,
-            ActionID::NameOfTheElements,
-            ActionID::BrandOfTheElements,
-        ];
-
-        for a in actions_to_execute {
-            assert!(craft_state.play_action(a as usize));
-        }
-
-        assert_eq!(craft_state.progress, 3422);
-    }
-
-    #[test]
-    fn name_of_elements_cannot_be_used_twice() {
-        let mut craft_state = GENERIC_PARAMS.new_craft();
-
-        let actions_to_execute = vec![
-            ActionID::NameOfTheElements,
-            ActionID::Observe,
-            ActionID::Observe,
-            ActionID::Observe,
-            ActionID::Observe,
-            ActionID::Observe,
-        ];
-
-        for a in actions_to_execute {
-            assert!(craft_state.play_action(a as usize));
-        }
-
-        let action_mask = craft_state.get_valid_action_mask();
-        assert_eq!(action_mask[ActionID::NameOfTheElements as usize], false);
     }
 
     #[test]
@@ -366,7 +306,7 @@ mod tests {
         let actions_to_execute = vec![
             ActionID::MuscleMemory,
             ActionID::Manipulation,
-            ActionID::InnerQuiet,
+            ActionID::BasicTouch,
             ActionID::Veneration,
             ActionID::Groundwork,
         ];
@@ -445,39 +385,6 @@ mod tests {
         assert_eq!(craft_state.step_state, StepState::Normal);
     }
 
-    #[test]
-    fn patient_touch_test() {
-        let mut craft_state = GENERIC_PARAMS.new_craft();
-
-        let actions_to_execute = vec![
-            ActionID::Reflect,
-            ActionID::BasicTouch,
-            ActionID::BasicTouch,
-        ];
-
-        for a in actions_to_execute {
-            assert!(craft_state.play_action(a as usize));
-        }
-
-        assert_eq!(craft_state.quality, 2922);
-        assert_eq!(craft_state.buffs.inner_quiet, 5);
-
-        // Next Patient Touch fails
-        craft_state.set_next_step_outcome(0.5, StepState::Normal);
-
-        assert!(craft_state.play_action(ActionID::PatientTouch as usize));
-
-        assert_eq!(craft_state.quality, 2922);
-        assert_eq!(craft_state.buffs.inner_quiet, 3);
-
-        // Next Patient Touch succeeds
-        craft_state.set_next_step_outcome(0.499, StepState::Normal);
-
-        assert!(craft_state.play_action(ActionID::PatientTouch as usize));
-
-        assert_eq!(craft_state.quality, 3946);
-        assert_eq!(craft_state.buffs.inner_quiet, 6);
-    }
     #[test]
     fn pliant_step_state_should_reduce_cp() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
@@ -688,7 +595,6 @@ mod tests {
         // Action, Current State, Fail step?
         let actions_to_execute = vec![
             (ActionID::MuscleMemory, StepState::Normal, false),
-            (ActionID::InnerQuiet, StepState::Primed, false),
             (ActionID::RapidSynthesis, StepState::Normal, false),
             (ActionID::Manipulation, StepState::Pliant, false),
             (ActionID::RapidSynthesis, StepState::Normal, true),
@@ -748,7 +654,6 @@ mod tests {
         // Action, Current State, Fail step?
         let actions_to_execute = vec![
             (ActionID::MuscleMemory, StepState::Normal, false),
-            (ActionID::InnerQuiet, StepState::Normal, false),
             (ActionID::RapidSynthesis, StepState::Normal, true),
             (ActionID::RapidSynthesis, StepState::Sturdy, false),
             (ActionID::Manipulation, StepState::Pliant, false),
@@ -809,7 +714,6 @@ mod tests {
         let actions_to_execute = vec![
             (ActionID::MuscleMemory, StepState::Normal, false),
             (ActionID::TricksOfTheTrade, StepState::Good, false),
-            (ActionID::InnerQuiet, StepState::Normal, false),
             (ActionID::PreciseTouch, StepState::Good, false),
             (ActionID::RapidSynthesis, StepState::Normal, false),
             (ActionID::PrudentTouch, StepState::Normal, false),

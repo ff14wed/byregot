@@ -74,6 +74,10 @@ impl CraftParams {
 
       buffs: Default::default(),
 
+      did_observe: false,
+      prev_basic_touch_combo: 0,
+      basic_touch_combo: 0,
+
       step_state: StepState::Normal,
       was_primed: false,
       next_success_rng: 0.0,
@@ -126,6 +130,10 @@ pub struct CraftState {
 
   pub buffs: BuffStacks,
 
+  pub did_observe: bool,
+  pub prev_basic_touch_combo: u8,
+  pub basic_touch_combo: u8,
+
   pub step_state: StepState,
   pub was_primed: bool,
   pub next_success_rng: f32,
@@ -145,10 +153,7 @@ pub struct BuffStacks {
   pub manipulation: u8,
   pub waste_not: u8,
   pub waste_not2: u8,
-  pub name_of_elements: i8,
   pub final_appraisal: u8,
-  pub observe: u8,
-  pub basic_touch: u8,
 }
 
 impl CraftState {

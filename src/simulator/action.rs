@@ -73,17 +73,12 @@ impl Change for Step {
     if state.buffs.waste_not2 > 0 {
       state.buffs.waste_not2 -= 1;
     }
-    if state.buffs.name_of_elements > 0 {
-      state.buffs.name_of_elements -= 1;
-      if state.buffs.name_of_elements == 0 {
-        state.buffs.name_of_elements = -1;
-      }
-    }
     if state.buffs.final_appraisal > 0 {
       state.buffs.final_appraisal -= 1;
     }
-    state.buffs.observe = 0;
-    state.buffs.basic_touch = 0;
+    state.did_observe = false;
+    state.prev_basic_touch_combo = state.basic_touch_combo;
+    state.basic_touch_combo = 0;
 
     let was_excellent = state.step_state == state::StepState::Excellent;
     state.was_primed = state.step_state == state::StepState::Primed;
@@ -185,34 +180,62 @@ impl Change for ConditionalIncreaseInnerQuiet {
 struct SuccessIfObserve;
 impl Change for SuccessIfObserve {
   fn execute(&self, state: &mut state::CraftState) {
-    if state.buffs.observe > 0 {
+    if state.did_observe {
       state.set_next_step_outcome(0.0, state.step_state);
     }
   }
 }
 
-struct BasicTouchStack;
-impl Change for BasicTouchStack {
+struct BasicTouchCombo;
+impl Change for BasicTouchCombo {
   fn execute(&self, state: &mut state::CraftState) {
-    state.buffs.basic_touch = 1;
+    state.basic_touch_combo = 1;
   }
 }
 
 struct StandardTouchCPCost;
 impl Change for StandardTouchCPCost {
   fn execute(&self, state: &mut state::CraftState) {
-    if state.buffs.basic_touch > 0 {
+    if state.basic_touch_combo == 1 {
       state.cp -= 18;
-      state.buffs.basic_touch = 0;
     } else {
       state.cp -= 32;
     }
   }
+
   fn validate(&self, state: &state::CraftState) -> bool {
-    if state.buffs.basic_touch > 0 {
+    if state.basic_touch_combo == 1 {
       state.cp >= 18
     } else {
       state.cp >= 32
+    }
+  }
+}
+
+struct StandardTouchCombo;
+impl Change for StandardTouchCombo {
+  fn execute(&self, state: &mut state::CraftState) {
+    if state.prev_basic_touch_combo == 1 {
+      state.basic_touch_combo = 2;
+    }
+  }
+}
+
+struct AdvancedTouchCPCost;
+impl Change for AdvancedTouchCPCost {
+  fn execute(&self, state: &mut state::CraftState) {
+    if state.basic_touch_combo == 2 {
+      state.cp -= 18;
+    } else {
+      state.cp -= 46;
+    }
+  }
+
+  fn validate(&self, state: &state::CraftState) -> bool {
+    if state.basic_touch_combo == 2 {
+      state.cp >= 18
+    } else {
+      state.cp >= 46
     }
   }
 }
@@ -230,7 +253,7 @@ impl Change for InnerQuiet {
 struct Observe;
 impl Change for Observe {
   fn execute(&self, state: &mut state::CraftState) {
-    state.buffs.observe = 1;
+    state.did_observe = true;
   }
 }
 
@@ -279,31 +302,6 @@ impl Change for Innovation {
   }
 }
 
-struct NameOfTheElements;
-impl Change for NameOfTheElements {
-  fn execute(&self, state: &mut state::CraftState) {
-    state.buffs.name_of_elements = 3 + state.get_buff_duration_bonus() as i8;
-  }
-  fn validate(&self, state: &state::CraftState) -> bool {
-    state.buffs.name_of_elements == 0
-  }
-}
-
-struct BrandOfTheElements;
-impl Change for BrandOfTheElements {
-  fn execute(&self, state: &mut state::CraftState) {
-    let bonus: f32 = {
-      if state.buffs.name_of_elements > 0 {
-        1. + (2. * ((1. - (state.progress as f32 / state.max_progress as f32)) * 100.).ceil())
-          / 100.
-      } else {
-        1.
-      }
-    };
-    state.increase_progress(100, bonus);
-  }
-}
-
 struct FinalAppraisal;
 impl Change for FinalAppraisal {
   fn execute(&self, state: &mut state::CraftState) {
@@ -315,8 +313,8 @@ impl Change for FinalAppraisal {
       }
     };
     // Final Appraisal breaks combos
-    state.buffs.observe = 0;
-    state.buffs.basic_touch = 0;
+    state.did_observe = false;
+    state.basic_touch_combo = 0;
   }
   fn validate(&self, state: &state::CraftState) -> bool {
     state.buffs.final_appraisal == 0 && !state.is_finished()
@@ -353,21 +351,6 @@ impl Change for MuscleMemory {
   }
 }
 
-struct PatientTouch;
-impl Change for PatientTouch {
-  fn execute(&self, state: &mut state::CraftState) {
-    if state.buffs.inner_quiet == 0 {
-      return;
-    }
-    if state.is_step_success(0.5) {
-      state.buffs.inner_quiet = cmp::min(11, state.buffs.inner_quiet * 2);
-    } else {
-      let rem = state.buffs.inner_quiet % 2;
-      state.buffs.inner_quiet = state.buffs.inner_quiet / 2 + rem;
-    }
-  }
-}
-
 struct Manipulation;
 impl Change for Manipulation {
   fn execute(&self, state: &mut state::CraftState) {
@@ -380,8 +363,8 @@ impl Change for Manipulation {
   }
 }
 
-struct PrudentTouchRequirement;
-impl Change for PrudentTouchRequirement {
+struct PrudentRequirement;
+impl Change for PrudentRequirement {
   fn execute(&self, _state: &mut state::CraftState) {}
   fn validate(&self, state: &state::CraftState) -> bool {
     state.buffs.waste_not == 0 && state.buffs.waste_not2 == 0
@@ -410,6 +393,14 @@ impl Change for Groundwork {
   }
 }
 
+struct TrainedFinesseRequirement;
+impl Change for TrainedFinesseRequirement {
+  fn execute(&self, _state: &mut state::CraftState) {}
+  fn validate(&self, state: &state::CraftState) -> bool {
+    state.buffs.inner_quiet == 10
+  }
+}
+
 const BASIC_SYNTHESIS: Action =
   change_set!(CPCost(0), IncreaseProgress(120), DurabilityCost(10), Step);
 
@@ -419,7 +410,7 @@ const BASIC_TOUCH: Action = change_set!(
   IncreaseInnerQuiet(1),
   DurabilityCost(10),
   Step,
-  BasicTouchStack
+  BasicTouchCombo
 );
 
 const MASTERS_MEND: Action = change_set!(CPCost(88), IncreaseDurability(30), Step);
@@ -439,8 +430,6 @@ const RAPID_SYNTHESIS: Action = change_set!(
   Step
 );
 
-const INNER_QUIET: Action = change_set!(CPCost(18), InnerQuiet, Step);
-
 const OBSERVE: Action = change_set!(CPCost(7), Step, Observe);
 
 const TRICKS_OF_THE_TRADE: Action = change_set!(GoodOrExcellentRequirement, TricksOfTheTrade, Step);
@@ -454,17 +443,13 @@ const STANDARD_TOUCH: Action = change_set!(
   IncreaseQuality(125),
   IncreaseInnerQuiet(1),
   DurabilityCost(10),
-  Step
+  Step,
+  StandardTouchCombo
 );
 
 const GREAT_STRIDES: Action = change_set!(CPCost(32), Step, GreatStrides);
 
 const INNOVATION: Action = change_set!(CPCost(18), Step, Innovation);
-
-const NAME_OF_THE_ELEMENTS: Action = change_set!(CPCost(30), Step, NameOfTheElements);
-
-const BRAND_OF_THE_ELEMENTS: Action =
-  change_set!(CPCost(6), BrandOfTheElements, DurabilityCost(10), Step);
 
 const FINAL_APPRAISAL: Action = change_set!(CPCost(1), FinalAppraisal);
 
@@ -492,19 +477,11 @@ const MUSCLE_MEMORY: Action = change_set!(
 const CAREFUL_SYNTHESIS: Action =
   change_set!(CPCost(7), IncreaseProgress(150), DurabilityCost(10), Step);
 
-const PATIENT_TOUCH: Action = change_set!(
-  CPCost(6),
-  ConditionalIncreaseQuality(100, 0.5),
-  PatientTouch,
-  DurabilityCost(10),
-  Step
-);
-
 const MANIPULATION: Action = change_set!(CPCost(96), Manipulation);
 
 const PRUDENT_TOUCH: Action = change_set!(
   CPCost(25),
-  PrudentTouchRequirement,
+  PrudentRequirement,
   IncreaseQuality(100),
   IncreaseInnerQuiet(1),
   DurabilityCost(5),
@@ -562,7 +539,31 @@ const INTENSIVE_SYNTHESIS: Action = change_set!(
   Step
 );
 
-pub const NUM_ACTIONS: usize = 31;
+const ADVANCED_TOUCH: Action = change_set!(
+  AdvancedTouchCPCost,
+  IncreaseQuality(150),
+  IncreaseInnerQuiet(1),
+  DurabilityCost(10),
+  Step
+);
+
+const PRUDENT_SYNTHESIS: Action = change_set!(
+  CPCost(18),
+  PrudentRequirement,
+  IncreaseProgress(180),
+  DurabilityCost(5),
+  Step
+);
+
+const TRAINED_FINESSE: Action = change_set!(
+  CPCost(32),
+  TrainedFinesseRequirement,
+  IncreaseQuality(0),
+  DurabilityCost(0),
+  Step
+);
+
+pub const NUM_ACTIONS: usize = 30;
 pub(super) type ActionList = [Action; NUM_ACTIONS];
 
 /// Actions with a difference:
@@ -574,7 +575,6 @@ pub(super) const ACTIONS: ActionList = [
   MASTERS_MEND,
   HASTY_TOUCH,
   RAPID_SYNTHESIS,
-  INNER_QUIET,
   OBSERVE,
   TRICKS_OF_THE_TRADE,
   WASTE_NOT,
@@ -582,15 +582,12 @@ pub(super) const ACTIONS: ActionList = [
   STANDARD_TOUCH,
   GREAT_STRIDES,
   INNOVATION,
-  NAME_OF_THE_ELEMENTS,
-  BRAND_OF_THE_ELEMENTS,
   FINAL_APPRAISAL,
   WASTE_NOT_II,
   BYREGOTS_BLESSING,
   PRECISE_TOUCH,
   MUSCLE_MEMORY,
   CAREFUL_SYNTHESIS,
-  PATIENT_TOUCH,
   MANIPULATION,
   PRUDENT_TOUCH,
   FOCUSED_SYNTHESIS,
@@ -600,6 +597,9 @@ pub(super) const ACTIONS: ActionList = [
   GROUNDWORK,
   DELICATE_SYNTHESIS,
   INTENSIVE_SYNTHESIS,
+  ADVANCED_TOUCH,
+  PRUDENT_SYNTHESIS,
+  TRAINED_FINESSE,
 ];
 
 pub(super) fn get_valid_action_mask(craft_state: &state::CraftState) -> [bool; NUM_ACTIONS] {

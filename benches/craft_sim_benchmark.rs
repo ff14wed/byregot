@@ -10,7 +10,7 @@ static ACTIONS_TO_EXECUTE: [ActionID; 13] = [
   ActionID::CarefulSynthesis,
   ActionID::FinalAppraisal,
   ActionID::CarefulSynthesis,
-  ActionID::InnerQuiet,
+  ActionID::BasicTouch,
   ActionID::WasteNotII,
   ActionID::PreparatoryTouch,
   ActionID::PreparatoryTouch,
