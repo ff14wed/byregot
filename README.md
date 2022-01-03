@@ -1,4 +1,6 @@
 # byregot
+![Build](https://github.com/ff14wed/byregot/workflows/Build/badge.svg?branch=master)
+
 Byregot is yet another simulation library for crafting in FINAL FANTASY XIV,
 heavily inspired by the [Teamcraft simulator](https://github.com/ffxiv-teamcraft/simulator).
 
