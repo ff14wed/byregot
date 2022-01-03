@@ -4,20 +4,25 @@ use byregot::simulator;
 use byregot::simulator::ActionID;
 use byregot::simulator::NUM_ACTIONS;
 
-static ACTIONS_TO_EXECUTE: [ActionID; 13] = [
+// Long-winded rotation
+static ACTIONS_TO_EXECUTE: [ActionID; 17] = [
   ActionID::MuscleMemory,
-  ActionID::CarefulSynthesis,
-  ActionID::CarefulSynthesis,
-  ActionID::FinalAppraisal,
-  ActionID::CarefulSynthesis,
-  ActionID::BasicTouch,
+  ActionID::Veneration,
+  ActionID::Manipulation,
   ActionID::WasteNotII,
+  ActionID::Groundwork,
+  ActionID::Groundwork,
+  ActionID::BasicTouch,
+  ActionID::StandardTouch,
+  ActionID::AdvancedTouch,
   ActionID::PreparatoryTouch,
   ActionID::PreparatoryTouch,
-  ActionID::MastersMend,
-  ActionID::MastersMend,
+  ActionID::Innovation,
+  ActionID::PreparatoryTouch,
+  ActionID::PreparatoryTouch,
+  ActionID::GreatStrides,
   ActionID::ByregotsBlessing,
-  ActionID::CarefulSynthesis,
+  ActionID::BasicSynthesis,
 ];
 
 fn full_craft_no_validate(craft_params: &simulator::CraftParams) {
@@ -44,15 +49,15 @@ fn set_next_state_rng(craft_state: &mut simulator::CraftState) {
 
 fn bench_craft(c: &mut Criterion) {
   let craft_params = simulator::CraftParams {
-    job_level: 80,
-    craftsmanship: 2087,
-    control: 1873,
-    cp: 463,
+    job_level: 90,
+    craftsmanship: 2763,
+    control: 2780,
+    cp: 545,
 
-    recipe_level: 430,
+    recipe_level: 560,
 
-    progress: 3943,
-    quality: 20287,
+    progress: 3500,
+    quality: 7200,
     durability: 80,
   };
 

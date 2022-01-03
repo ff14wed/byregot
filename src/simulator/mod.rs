@@ -760,4 +760,50 @@ mod tests {
             assert_eq!(craft_state.quality > 0, should_succeed);
         }
     }
+
+    #[test]
+    fn benchmark_rotation() {
+        let params = CraftParams {
+            job_level: 90,
+            craftsmanship: 2763,
+            control: 2780,
+            cp: 545,
+
+            recipe_level: 560,
+
+            progress: 3500,
+            quality: 7200,
+            durability: 80,
+        };
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![
+            ActionID::MuscleMemory,
+            ActionID::Veneration,
+            ActionID::Manipulation,
+            ActionID::WasteNotII,
+            ActionID::Groundwork,
+            ActionID::Groundwork,
+            ActionID::BasicTouch,
+            ActionID::StandardTouch,
+            ActionID::AdvancedTouch,
+            ActionID::PreparatoryTouch,
+            ActionID::PreparatoryTouch,
+            ActionID::Innovation,
+            ActionID::PreparatoryTouch,
+            ActionID::PreparatoryTouch,
+            ActionID::GreatStrides,
+            ActionID::ByregotsBlessing,
+            ActionID::BasicSynthesis,
+        ];
+
+        for a in actions_to_execute {
+            assert!(craft_state.play_action(a));
+        }
+
+        assert!(craft_state.is_finished());
+        assert_eq!(craft_state.progress, 3589);
+        assert_eq!(craft_state.quality, 7859);
+        assert_eq!(craft_state.cp, 3);
+    }
 }

@@ -40,6 +40,10 @@ To run the tests, run `cargo test`.
 
 To run the benchmarks, run `cargo bench`.
 
+## Usage
+For example usage of the library, check out the [benchmark
+code](benches/craft_sim_benchmark.rs).
+
 ## Benchmarks
 Abbreviated single-threaded benchmark results on a AMD Ryzen 5950x:
 
