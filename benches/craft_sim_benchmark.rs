@@ -23,14 +23,14 @@ static ACTIONS_TO_EXECUTE: [ActionID; 13] = [
 fn full_craft_no_validate(craft_params: &simulator::CraftParams) {
   let mut craft_state = craft_params.new_craft();
   for a in &ACTIONS_TO_EXECUTE {
-    craft_state.play_action_no_validate(black_box(*a as usize));
+    craft_state.play_action_no_validate(black_box(*a));
   }
 }
 
 fn full_craft(craft_params: &simulator::CraftParams) {
   let mut craft_state = craft_params.new_craft();
   for a in &ACTIONS_TO_EXECUTE {
-    craft_state.play_action(black_box(*a as usize));
+    craft_state.play_action(black_box(*a));
   }
 }
 
@@ -50,8 +50,6 @@ fn bench_craft(c: &mut Criterion) {
     cp: 463,
 
     recipe_level: 430,
-    suggested_craftsmanship: 1866,
-    suggested_control: 1733,
 
     progress: 3943,
     quality: 20287,
@@ -70,7 +68,7 @@ fn bench_craft(c: &mut Criterion) {
     b.iter(|| get_valid_actions(black_box(&craft_state)))
   });
 
-  craft_state.play_action(ActionID::MuscleMemory as usize);
+  craft_state.play_action(ActionID::MuscleMemory);
 
   c.bench_function("get_valid_actions2", |b| {
     b.iter(|| get_valid_actions(black_box(&craft_state)))

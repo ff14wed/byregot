@@ -1,7 +1,8 @@
-use super::tables;
 use std::hash::{Hash, Hasher};
 
 use super::action::{get_valid_action_mask, Change, ACTIONS, NUM_ACTIONS};
+use super::tables;
+use super::ActionID;
 
 use rand::distributions::WeightedIndex;
 use rand::prelude::*;
@@ -21,25 +22,6 @@ pub enum StepState {
   Primed,
 }
 
-#[derive(Debug, Copy, Clone)]
-struct QualityParams {
-  control: u32,
-  suggested_control: u32,
-  quality_factor: f32,
-}
-
-impl QualityParams {
-  fn get_base_quality(&self, iq_stacks: u8) -> f32 {
-    let mut control = self.control as f32;
-    if iq_stacks > 0 {
-      control += (0.2 * ((iq_stacks - 1) as f32) * control).floor();
-    }
-    let control_ratio: f32 = (control + 10000.) / (self.suggested_control as f32 + 10000.);
-    let control_multiplier: f32 = (control * 35.) / 100. + 35.;
-    return control_ratio * control_multiplier * self.quality_factor;
-  }
-}
-
 pub struct CraftParams {
   pub job_level: u32,
   pub craftsmanship: u32,
@@ -47,8 +29,6 @@ pub struct CraftParams {
   pub cp: u32,
 
   pub recipe_level: u32,
-  pub suggested_craftsmanship: u32,
-  pub suggested_control: u32,
 
   pub progress: u32,
   pub quality: u32,
@@ -84,31 +64,32 @@ impl CraftParams {
 
       recipe_level: self.recipe_level,
       base_progress: self.get_base_progress().floor(),
-      quality_params: self.get_quality_params(),
+      base_quality: self.get_base_quality().floor(),
     }
   }
 
   fn get_base_progress(&self) -> f32 {
     let crafter_level = tables::get_crafter_level(self.job_level);
-    let cld = tables::get_craft_level_difference(self.recipe_level, crafter_level);
-    let progress_factor = cld.progress_factor as f32 / 100.;
+    // Will panic if recipe_level is out of range
+    let modifiers = &tables::RECIPE_LEVEL_TABLE[self.recipe_level as usize];
 
-    let cms_ratio: f32 =
-      (self.craftsmanship as f32 + 10000.) / (self.suggested_craftsmanship as f32 + 10000.);
-    let cms_multiplier: f32 = (self.craftsmanship as f32 * 21.) / 100. + 2.;
-    return cms_ratio * cms_multiplier * progress_factor;
+    let base_value = (self.craftsmanship as f32 * 10.) / modifiers.progress_divider() + 2.;
+    if crafter_level <= self.recipe_level {
+      return (base_value * modifiers.progress_modifier()) / 100.;
+    }
+    return base_value;
   }
 
-  fn get_quality_params(&self) -> QualityParams {
+  fn get_base_quality(&self) -> f32 {
     let crafter_level = tables::get_crafter_level(self.job_level);
-    let cld = tables::get_craft_level_difference(self.recipe_level, crafter_level);
-    let quality_factor = cld.quality_factor as f32 / 100.;
+    // Will panic if recipe_level is out of range
+    let modifiers = &tables::RECIPE_LEVEL_TABLE[self.recipe_level as usize];
 
-    QualityParams {
-      control: self.control,
-      suggested_control: self.suggested_control,
-      quality_factor: quality_factor,
+    let base_value = (self.control as f32 * 10.) / modifiers.quality_divider() + 35.;
+    if crafter_level <= self.recipe_level {
+      return (base_value * modifiers.quality_modifier()) / 100.;
     }
+    return base_value;
   }
 }
 
@@ -140,7 +121,7 @@ pub struct CraftState {
 
   recipe_level: u32,
   base_progress: f32,
-  quality_params: QualityParams,
+  base_quality: f32,
 }
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Hash)]
@@ -175,9 +156,9 @@ impl CraftState {
       }
     };
 
-    bonus *= condition_bonus;
+    let efficiency = (potency as f32 * bonus) / 100.;
 
-    self.progress += ((self.base_progress * potency as f32 * bonus) / 100.).floor() as u32;
+    self.progress += (self.base_progress * condition_bonus * efficiency).floor() as u32;
 
     if self.buffs.final_appraisal > 0 && self.progress >= self.max_progress {
       self.progress = self.max_progress - 1;
@@ -186,14 +167,16 @@ impl CraftState {
   }
 
   pub(super) fn increase_quality(&mut self, potency: u32, base_bonus: f32) {
-    let base_quality = self.quality_params.get_base_quality(self.buffs.inner_quiet);
     let mut bonus = base_bonus;
+    bonus += (self.buffs.inner_quiet as f32) / 10.;
+
+    let mut buff_bonus = 1.;
     if self.buffs.great_strides > 0 {
-      bonus += 1.;
+      buff_bonus += 1.;
       self.buffs.great_strides = 0;
     }
     if self.buffs.innovation > 0 {
-      bonus += 0.5;
+      buff_bonus += 0.5;
     }
 
     let condition_bonus = {
@@ -205,9 +188,9 @@ impl CraftState {
       }
     };
 
-    let mod_quality = (base_quality * condition_bonus).floor();
+    let efficiency = (potency as f32 * bonus * buff_bonus) / 100.;
 
-    self.quality += ((mod_quality * potency as f32 * bonus) / 100.).floor() as u32;
+    self.quality += (self.base_quality * condition_bonus * efficiency).floor() as u32;
   }
 
   /// set_next_state_outcome sets the success and/or StepState of the next step.
@@ -321,13 +304,13 @@ impl CraftState {
 
   /// play_action_no_validate makes no attempt to validate the action; it should
   /// be checked beforehand
-  pub fn play_action_no_validate(&mut self, action_id: usize) {
+  pub fn play_action_no_validate(&mut self, action_id: ActionID) {
     ACTIONS[action_id].execute(self)
   }
 
   /// play_action returns true if the action was validated and executed. False
   /// otherwise.
-  pub fn play_action(&mut self, action_id: usize) -> bool {
+  pub fn play_action(&mut self, action_id: ActionID) -> bool {
     let valid_action = ACTIONS[action_id].validate(self);
     if valid_action {
       ACTIONS[action_id].execute(self);
