@@ -7,8 +7,6 @@ use super::ActionID;
 use rand::distributions::WeightedIndex;
 use rand::prelude::*;
 
-pub const OBS_SIZE: usize = 22;
-
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum StepState {
   Normal = 0,
