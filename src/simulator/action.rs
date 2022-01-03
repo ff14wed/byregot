@@ -157,22 +157,15 @@ impl Change for IncreaseDurability {
 struct IncreaseInnerQuiet(u8);
 impl Change for IncreaseInnerQuiet {
   fn execute(&self, state: &mut state::CraftState) {
-    if state.buffs.inner_quiet == 0 {
-      return;
-    }
-    state.buffs.inner_quiet = cmp::min(11, state.buffs.inner_quiet + self.0);
+    state.buffs.inner_quiet = cmp::min(10, state.buffs.inner_quiet + self.0);
   }
 }
 
 struct ConditionalIncreaseInnerQuiet(u8, f32);
 impl Change for ConditionalIncreaseInnerQuiet {
   fn execute(&self, state: &mut state::CraftState) {
-    if state.buffs.inner_quiet == 0 {
-      return;
-    }
-
     if state.is_step_success(self.1) {
-      state.buffs.inner_quiet = cmp::min(11, state.buffs.inner_quiet + self.0);
+      state.buffs.inner_quiet = cmp::min(10, state.buffs.inner_quiet + self.0);
     }
   }
 }
@@ -237,16 +230,6 @@ impl Change for AdvancedTouchCPCost {
     } else {
       state.cp >= 46
     }
-  }
-}
-
-struct InnerQuiet;
-impl Change for InnerQuiet {
-  fn execute(&self, state: &mut state::CraftState) {
-    state.buffs.inner_quiet = 1;
-  }
-  fn validate(&self, state: &state::CraftState) -> bool {
-    state.buffs.inner_quiet == 0
   }
 }
 
@@ -332,7 +315,8 @@ impl Change for WasteNotII {
 struct ByregotsBlessing;
 impl Change for ByregotsBlessing {
   fn execute(&self, state: &mut state::CraftState) {
-    state.increase_quality(100 + (state.buffs.inner_quiet as u32 - 1) * 20, 1.);
+    let potency = cmp::min(100 + 20 * state.buffs.inner_quiet as u32, 300);
+    state.increase_quality(potency, 1.);
     state.buffs.inner_quiet = 0;
   }
   fn validate(&self, state: &state::CraftState) -> bool {
@@ -374,7 +358,7 @@ impl Change for PrudentRequirement {
 struct Reflect;
 impl Change for Reflect {
   fn execute(&self, state: &mut state::CraftState) {
-    state.buffs.inner_quiet = 3;
+    state.buffs.inner_quiet = 2;
     state.step_num += 1;
   }
   fn validate(&self, state: &state::CraftState) -> bool {
@@ -386,9 +370,9 @@ struct Groundwork;
 impl Change for Groundwork {
   fn execute(&self, state: &mut state::CraftState) {
     if state.durability < state.get_durability_cost(20) as i32 {
-      state.increase_progress(150, 1.);
+      state.increase_progress(180, 1.);
     } else {
-      state.increase_progress(300, 1.);
+      state.increase_progress(360, 1.);
     }
   }
 }
@@ -475,7 +459,7 @@ const MUSCLE_MEMORY: Action = change_set!(
 );
 
 const CAREFUL_SYNTHESIS: Action =
-  change_set!(CPCost(7), IncreaseProgress(150), DurabilityCost(10), Step);
+  change_set!(CPCost(7), IncreaseProgress(180), DurabilityCost(10), Step);
 
 const MANIPULATION: Action = change_set!(CPCost(96), Manipulation);
 
@@ -505,12 +489,7 @@ const FOCUSED_TOUCH: Action = change_set!(
   Step
 );
 
-const REFLECT: Action = change_set!(
-  CPCost(24),
-  IncreaseQuality(100),
-  DurabilityCost(10),
-  Reflect
-);
+const REFLECT: Action = change_set!(CPCost(6), IncreaseQuality(100), DurabilityCost(10), Reflect);
 
 const PREPARATORY_TOUCH: Action = change_set!(
   CPCost(40),
@@ -558,7 +537,7 @@ const PRUDENT_SYNTHESIS: Action = change_set!(
 const TRAINED_FINESSE: Action = change_set!(
   CPCost(32),
   TrainedFinesseRequirement,
-  IncreaseQuality(0),
+  IncreaseQuality(100),
   DurabilityCost(0),
   Step
 );
