@@ -806,4 +806,184 @@ mod tests {
         assert_eq!(craft_state.quality, 7859);
         assert_eq!(craft_state.cp, 3);
     }
+
+    #[test]
+    fn full_expert_rotation_a() {
+        let params = CraftParams {
+            job_level: 90,
+            craftsmanship: 3216,
+            control: 3368,
+            cp: 621,
+
+            recipe_level: 514,
+
+            progress: 5077,
+            quality: 14321,
+            durability: 55,
+        };
+        let mut craft_state = params.new_craft();
+        // Action, Current State, Fail step?
+        let actions_to_execute = vec![
+            (ActionID::MuscleMemory, StepState::Normal, false),
+            (ActionID::RapidSynthesis, StepState::Sturdy, true),
+            (ActionID::Manipulation, StepState::Pliant, false),
+            (ActionID::RapidSynthesis, StepState::Pliant, false),
+            (ActionID::HastyTouch, StepState::Sturdy, false),
+            (ActionID::Veneration, StepState::Normal, false),
+            (ActionID::RapidSynthesis, StepState::Normal, false),
+            (ActionID::Innovation, StepState::Pliant, false),
+            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
+            (ActionID::PrudentTouch, StepState::Normal, false),
+            (ActionID::Manipulation, StepState::Pliant, false),
+            (ActionID::PrudentTouch, StepState::Normal, false),
+            (ActionID::Innovation, StepState::Pliant, false),
+            (ActionID::PreparatoryTouch, StepState::Good, false),
+            (ActionID::HastyTouch, StepState::Centered, false),
+            (ActionID::HastyTouch, StepState::Centered, false),
+            (ActionID::HastyTouch, StepState::Centered, false),
+            (ActionID::MastersMend, StepState::Centered, false),
+            (ActionID::GreatStrides, StepState::Normal, false),
+            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
+            (ActionID::GreatStrides, StepState::Sturdy, false),
+            (ActionID::Innovation, StepState::Normal, false),
+            (ActionID::PreparatoryTouch, StepState::Centered, false),
+            (ActionID::GreatStrides, StepState::Normal, false),
+            (ActionID::ByregotsBlessing, StepState::Good, false),
+            (ActionID::PrudentTouch, StepState::Good, false),
+            (ActionID::CarefulSynthesis, StepState::Normal, false),
+        ];
+
+        for (a, next_state, next_rng) in actions_to_execute {
+            craft_state.set_next_step_outcome(next_rng as u8 as f32, next_state);
+
+            let action_mask = craft_state.get_valid_action_mask();
+            assert!(action_mask[a as usize]);
+            craft_state.play_action(a);
+        }
+
+        assert!(craft_state.is_finished());
+        assert_eq!(craft_state.progress, 5150);
+        assert_eq!(craft_state.quality, 19385);
+        assert_eq!(craft_state.durability, -5);
+        assert_eq!(craft_state.cp, 15);
+    }
+
+    #[test]
+    fn full_expert_rotation_b() {
+        let params = CraftParams {
+            job_level: 90,
+            craftsmanship: 3216,
+            control: 3368,
+            cp: 621,
+
+            recipe_level: 515,
+
+            progress: 5095,
+            quality: 14854,
+            durability: 55,
+        };
+        let mut craft_state = params.new_craft();
+        // Action, Current State, Fail step?
+        let actions_to_execute = vec![
+            (ActionID::MuscleMemory, StepState::Normal, false),
+            (ActionID::RapidSynthesis, StepState::Sturdy, false),
+            (ActionID::PreciseTouch, StepState::Good, false),
+            (ActionID::Manipulation, StepState::Pliant, false),
+            (ActionID::RapidSynthesis, StepState::Malleable, false),
+            (ActionID::MastersMend, StepState::Pliant, false),
+            (ActionID::PreparatoryTouch, StepState::Pliant, false),
+            (ActionID::PreciseTouch, StepState::Good, false),
+            (ActionID::Innovation, StepState::Sturdy, false),
+            (ActionID::PreparatoryTouch, StepState::Primed, false),
+            (ActionID::PrudentTouch, StepState::Malleable, false),
+            (ActionID::PrudentTouch, StepState::Normal, false),
+            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
+            (ActionID::MastersMend, StepState::Pliant, false),
+            (ActionID::Innovation, StepState::Malleable, false),
+            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
+            (ActionID::AdvancedTouch, StepState::Malleable, false),
+            (ActionID::TrainedFinesse, StepState::Normal, false),
+            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
+            (ActionID::GreatStrides, StepState::Normal, false),
+            (ActionID::Innovation, StepState::Normal, false),
+            (ActionID::ByregotsBlessing, StepState::Sturdy, false),
+            (ActionID::CarefulSynthesis, StepState::Sturdy, false),
+        ];
+
+        for (a, next_state, next_rng) in actions_to_execute {
+            craft_state.set_next_step_outcome(next_rng as u8 as f32, next_state);
+
+            let action_mask = craft_state.get_valid_action_mask();
+            assert!(action_mask[a as usize]);
+            craft_state.play_action(a);
+        }
+
+        assert!(craft_state.is_finished());
+        assert_eq!(craft_state.progress, 5150);
+        assert_eq!(craft_state.quality, 17240);
+        assert_eq!(craft_state.durability, 5);
+        assert_eq!(craft_state.cp, 18);
+    }
+
+    #[test]
+    fn full_expert_rotation_c() {
+        let params = CraftParams {
+            job_level: 90,
+            craftsmanship: 3216,
+            control: 3368,
+            cp: 621,
+
+            recipe_level: 516,
+
+            progress: 5470,
+            quality: 16156,
+            durability: 60,
+        };
+        let mut craft_state = params.new_craft();
+        // Action, Current State, Fail step?
+        let actions_to_execute = vec![
+            (ActionID::MuscleMemory, StepState::Normal, false),
+            (ActionID::RapidSynthesis, StepState::Sturdy, false),
+            (ActionID::PrudentTouch, StepState::Malleable, false),
+            (ActionID::RapidSynthesis, StepState::Normal, true),
+            (ActionID::Manipulation, StepState::Pliant, false),
+            (ActionID::RapidSynthesis, StepState::Sturdy, true),
+            (ActionID::RapidSynthesis, StepState::Sturdy, false),
+            (ActionID::PreciseTouch, StepState::Good, false),
+            (ActionID::PreciseTouch, StepState::Good, false),
+            (ActionID::RapidSynthesis, StepState::Normal, false),
+            (ActionID::PreciseTouch, StepState::Good, false),
+            (ActionID::Innovation, StepState::Normal, false),
+            (ActionID::PreciseTouch, StepState::Good, false),
+            (ActionID::MastersMend, StepState::Centered, false),
+            (ActionID::HastyTouch, StepState::Centered, false),
+            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
+            (ActionID::Innovation, StepState::Normal, false),
+            (ActionID::TrainedFinesse, StepState::Normal, false),
+            (ActionID::TrainedFinesse, StepState::Primed, false),
+            (ActionID::TrainedFinesse, StepState::Normal, false),
+            (ActionID::TrainedFinesse, StepState::Normal, false),
+            (ActionID::Innovation, StepState::Centered, false),
+            (ActionID::TrainedFinesse, StepState::Pliant, false),
+            (ActionID::TrainedFinesse, StepState::Normal, false),
+            (ActionID::BasicTouch, StepState::Sturdy, false),
+            (ActionID::GreatStrides, StepState::Primed, false),
+            (ActionID::ByregotsBlessing, StepState::Good, false),
+            (ActionID::CarefulSynthesis, StepState::Centered, false),
+        ];
+
+        for (a, next_state, next_rng) in actions_to_execute {
+            craft_state.set_next_step_outcome(next_rng as u8 as f32, next_state);
+
+            let action_mask = craft_state.get_valid_action_mask();
+            assert!(action_mask[a as usize]);
+            craft_state.play_action(a);
+        }
+
+        assert!(craft_state.is_finished());
+        assert_eq!(craft_state.progress, 5728);
+        assert_eq!(craft_state.quality, 18625);
+        assert_eq!(craft_state.durability, -5);
+        assert_eq!(craft_state.cp, 31);
+    }
 }
