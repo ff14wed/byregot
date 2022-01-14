@@ -80,12 +80,12 @@ impl Change for Step {
     state.prev_basic_touch_combo = state.basic_touch_combo;
     state.basic_touch_combo = 0;
 
-    let was_excellent = state.step_state == state::StepState::Excellent;
+    state.was_excellent = state.step_state == state::StepState::Excellent;
     state.was_primed = state.step_state == state::StepState::Primed;
 
     state.reset_rng();
 
-    if was_excellent {
+    if state.was_excellent {
       state.step_state = state::StepState::Poor;
     }
   }

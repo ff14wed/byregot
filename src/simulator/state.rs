@@ -58,6 +58,7 @@ impl CraftParams {
 
       step_state: StepState::Normal,
       was_primed: false,
+      was_excellent: false,
       next_success_rng: 0.0,
 
       recipe_level: self.recipe_level,
@@ -114,8 +115,10 @@ pub struct CraftState {
   pub basic_touch_combo: u8,
 
   pub step_state: StepState,
-  pub was_primed: bool,
   pub next_success_rng: f32,
+
+  pub(super) was_primed: bool,
+  pub(super) was_excellent: bool,
 
   recipe_level: u32,
   base_progress: f32,
@@ -208,6 +211,9 @@ impl CraftState {
 
   /// Returns possible next states and their weights
   pub(super) fn possible_next_states(&self) -> (&[StepState], &[f32]) {
+    if self.was_excellent {
+      return (&[StepState::Poor], &[1.]);
+    }
     match self.recipe_level {
       511 | 512 | 514 => (
         &[

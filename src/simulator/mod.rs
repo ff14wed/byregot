@@ -536,6 +536,13 @@ mod tests {
         assert_eq!(craft_state.quality, 1196);
         assert_eq!(craft_state.step_state, StepState::Poor);
 
+        // Setting the next state outcome should not change the step state from
+        // poor
+        for _ in 0..50 {
+            craft_state.set_next_state_rng();
+            assert_eq!(craft_state.step_state, StepState::Poor);
+        }
+
         assert!(craft_state.play_action(ActionID::BasicTouch));
 
         assert_eq!(craft_state.max_cp - craft_state.cp, 6 + 18 + 18);
