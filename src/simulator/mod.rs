@@ -433,6 +433,37 @@ mod tests {
     }
 
     #[test]
+    fn quality_buff_flooring_test() {
+        let params: CraftParams = CraftParams {
+            job_level: 66,
+            craftsmanship: 813,
+            control: 683,
+            cp: 283,
+
+            recipe_level: 285,
+
+            progress: 980,
+            quality: 3420,
+            durability: 80,
+        };
+
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![
+            ActionID::Innovation,
+            ActionID::PrudentTouch,
+            ActionID::PrudentTouch,
+            ActionID::PrudentTouch,
+        ];
+
+        for a in actions_to_execute {
+            assert!(craft_state.play_action(a));
+        }
+
+        assert_eq!(craft_state.quality, 667);
+    }
+
+    #[test]
     fn invalid_step_should_not_execute() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
@@ -454,6 +485,7 @@ mod tests {
             assert!(craft_state.play_action(a));
         }
 
+        assert_eq!(craft_state.step_num, 1);
         assert_eq!(craft_state.buffs.great_strides, 3);
         assert_eq!(craft_state.buffs.final_appraisal, 5);
     }
