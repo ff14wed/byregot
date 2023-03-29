@@ -15,17 +15,17 @@ pub(super) fn get_crafter_level(job_level: u32) -> u32 {
 pub(super) struct RecipeLevelModifiers(u8, u8, u8, u8);
 
 impl RecipeLevelModifiers {
-    pub fn progress_divider(&self) -> f32 {
-        self.0 as f32
+    pub fn progress_divider(&self) -> f64 {
+        self.0 as f64
     }
-    pub fn quality_divider(&self) -> f32 {
-        self.1 as f32
+    pub fn quality_divider(&self) -> f64 {
+        self.1 as f64
     }
-    pub fn progress_modifier(&self) -> f32 {
-        self.2 as f32
+    pub fn progress_modifier(&self) -> f64 {
+        self.2 as f64
     }
-    pub fn quality_modifier(&self) -> f32 {
-        self.3 as f32
+    pub fn quality_modifier(&self) -> f64 {
+        self.3 as f64
     }
 }
 

@@ -433,6 +433,171 @@ mod tests {
     }
 
     #[test]
+    fn progress_flooring_test() {
+        let params: CraftParams = CraftParams {
+            job_level: 90,
+            craftsmanship: 2606,
+            control: 2457,
+            cp: 507,
+
+            recipe_level: 535,
+
+            progress: 3000,
+            quality: 6700,
+            durability: 70,
+        };
+
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![ActionID::CarefulSynthesis];
+
+        for a in actions_to_execute {
+            assert!(craft_state.play_action(a));
+        }
+
+        assert_eq!(craft_state.progress, 378);
+    }
+
+    #[test]
+    fn basic_flooring_test() {
+        let params: CraftParams = CraftParams {
+            job_level: 80,
+            craftsmanship: 1645,
+            control: 1532,
+            cp: 400,
+
+            recipe_level: 517,
+
+            progress: 2000,
+            quality: 5200,
+            durability: 70,
+        };
+
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![
+            ActionID::BasicTouch,
+            ActionID::BasicTouch,
+            ActionID::BasicTouch,
+            ActionID::BasicTouch,
+        ];
+
+        for a in actions_to_execute {
+            assert!(craft_state.play_action(a));
+        }
+
+        assert_eq!(craft_state.quality, 828);
+    }
+
+    #[test]
+    fn basic_flooring_test2() {
+        let params: CraftParams = CraftParams {
+            job_level: 90,
+            craftsmanship: 3289,
+            control: 3420,
+            cp: 400,
+
+            recipe_level: 580,
+
+            progress: 3900,
+            quality: 10920,
+            durability: 70,
+        };
+
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![
+            ActionID::MuscleMemory,
+            ActionID::Veneration,
+            ActionID::Groundwork,
+            ActionID::Groundwork,
+            ActionID::Observe,
+            ActionID::Observe,
+            ActionID::CarefulSynthesis,
+        ];
+
+        assert!(craft_state.play_action(actions_to_execute[0]));
+        assert_eq!(craft_state.progress, 609);
+
+        for a in &actions_to_execute[1..] {
+            assert!(craft_state.play_action(*a));
+        }
+
+        assert_eq!(craft_state.progress, 3897);
+    }
+
+    #[test]
+    fn quality_flooring_test() {
+        let params: CraftParams = CraftParams {
+            job_level: 58,
+            craftsmanship: 2606,
+            control: 434,
+            cp: 507,
+
+            recipe_level: 145,
+
+            progress: 3000,
+            quality: 6700,
+            durability: 70,
+        };
+
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![
+            ActionID::Innovation,
+            ActionID::BasicTouch,
+            ActionID::StandardTouch,
+            ActionID::BasicTouch,
+        ];
+
+        for a in &actions_to_execute[0..3] {
+            assert!(craft_state.play_action(*a));
+        }
+        let old_quality = craft_state.quality;
+        assert!(craft_state.play_action(actions_to_execute[3]));
+
+        assert_eq!(craft_state.quality - old_quality, 225);
+    }
+
+    #[test]
+    fn quality_flooring_test2() {
+        let params: CraftParams = CraftParams {
+            job_level: 90,
+            craftsmanship: 3702,
+            control: 3792,
+            cp: 588,
+
+            recipe_level: 610,
+
+            progress: 5060,
+            quality: 12628,
+            durability: 70,
+        };
+
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![
+            ActionID::MuscleMemory,
+            ActionID::Manipulation,
+            ActionID::Veneration,
+            ActionID::WasteNotII,
+            ActionID::Groundwork,
+            ActionID::Groundwork,
+            ActionID::DelicateSynthesis,
+            ActionID::PreparatoryTouch,
+            ActionID::PreparatoryTouch,
+        ];
+
+        for a in &actions_to_execute[0..8] {
+            assert!(craft_state.play_action(*a));
+        }
+        let old_quality = craft_state.quality;
+        assert!(craft_state.play_action(actions_to_execute[8]));
+
+        assert_eq!(craft_state.quality - old_quality, 663);
+    }
+
+    #[test]
     fn quality_buff_flooring_test() {
         let params: CraftParams = CraftParams {
             job_level: 66,

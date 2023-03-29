@@ -67,26 +67,26 @@ impl CraftParams {
         }
     }
 
-    fn get_base_progress(&self) -> f32 {
+    fn get_base_progress(&self) -> f64 {
         let crafter_level = tables::get_crafter_level(self.job_level);
         // Will panic if recipe_level is out of range
         let modifiers = &tables::RECIPE_LEVEL_TABLE[self.recipe_level as usize];
 
-        let base_value = (self.craftsmanship as f32 * 10.) / modifiers.progress_divider() + 2.;
+        let base_value = (self.craftsmanship as f64 * 10.) / modifiers.progress_divider() + 2.;
         if crafter_level <= self.recipe_level {
-            return (base_value * modifiers.progress_modifier()) / 100.;
+            return base_value * modifiers.progress_modifier() * (0.01 as f32 as f64);
         }
         return base_value;
     }
 
-    fn get_base_quality(&self) -> f32 {
+    fn get_base_quality(&self) -> f64 {
         let crafter_level = tables::get_crafter_level(self.job_level);
         // Will panic if recipe_level is out of range
         let modifiers = &tables::RECIPE_LEVEL_TABLE[self.recipe_level as usize];
 
-        let base_value = (self.control as f32 * 10.) / modifiers.quality_divider() + 35.;
+        let base_value = (self.control as f64 * 10.) / modifiers.quality_divider() + 35.;
         if crafter_level <= self.recipe_level {
-            return (base_value * modifiers.quality_modifier()) / 100.;
+            return base_value * modifiers.quality_modifier() * (0.01 as f32 as f64);
         }
         return base_value;
     }
@@ -121,8 +121,8 @@ pub struct CraftState {
     pub(super) was_excellent: bool,
 
     recipe_level: u32,
-    base_progress: f32,
-    base_quality: f32,
+    base_progress: f64,
+    base_quality: f64,
 }
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Hash)]
@@ -139,7 +139,7 @@ pub struct BuffStacks {
 }
 
 impl CraftState {
-    pub(super) fn increase_progress(&mut self, potency: u32, base_bonus: f32) {
+    pub(super) fn increase_progress(&mut self, potency: u32, base_bonus: f64) {
         let mut bonus = base_bonus;
         if self.buffs.muscle_memory > 0 {
             bonus += 1.;
@@ -157,9 +157,11 @@ impl CraftState {
             }
         };
 
-        let efficiency = (potency as f32 * bonus) / 100.;
+        let efficiency = potency as f64 * bonus;
 
-        self.progress += (self.base_progress * condition_bonus * efficiency).floor() as u32;
+        let progress_increase = (self.base_progress * condition_bonus * efficiency) / 100.;
+
+        self.progress += progress_increase.floor() as u32;
 
         if self.buffs.final_appraisal > 0 && self.progress >= self.max_progress {
             self.progress = self.max_progress - 1;
@@ -167,9 +169,9 @@ impl CraftState {
         }
     }
 
-    pub(super) fn increase_quality(&mut self, potency: u32, base_bonus: f32) {
+    pub(super) fn increase_quality(&mut self, potency: u32, base_bonus: f64) {
         let mut bonus = base_bonus;
-        bonus += (self.buffs.inner_quiet as f32) / 10.;
+        bonus += (self.buffs.inner_quiet as f64) / 10.;
 
         let mut buff_bonus = 1.;
         if self.buffs.great_strides > 0 {
@@ -189,9 +191,10 @@ impl CraftState {
             }
         };
 
-        let efficiency = (potency as f32 * bonus * buff_bonus) / 100.;
+        let efficiency = potency as f64 * bonus * buff_bonus;
+        let quality_increase = (self.base_quality * condition_bonus * efficiency) / 100.;
 
-        self.quality += (self.base_quality * condition_bonus * efficiency).floor() as u32;
+        self.quality += quality_increase.floor() as u32;
     }
 
     /// set_next_state_outcome sets the success and/or StepState of the next step.
