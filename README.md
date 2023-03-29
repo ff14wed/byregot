@@ -30,7 +30,8 @@ Synthesis" or "Groundwork".
 :x: Byregot does not implement Trained Eye.
 
 :x: Byregot does not currently implement the specialist actions Careful
-Observation and Heart and Soul.
+Observation and Heart and Soul. This means Muscle Memory and Reflect can
+only be used on Normal conditions.
 
 ## Development
 Byregot is written in Rust, and so needs
