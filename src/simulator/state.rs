@@ -31,6 +31,13 @@ pub struct CraftParams {
     pub progress: u32,
     pub quality: u32,
     pub durability: u32,
+
+    pub gear_effects: GearEffects,
+}
+
+#[derive(Debug, Default, PartialEq, Eq, Copy, Clone, Hash)]
+pub struct GearEffects {
+    pub splendorous: bool,
 }
 
 impl CraftParams {
@@ -49,6 +56,8 @@ impl CraftParams {
 
             cp: self.cp,
             max_cp: self.cp,
+
+            gear_effects: self.gear_effects,
 
             buffs: Default::default(),
 
@@ -107,6 +116,8 @@ pub struct CraftState {
 
     pub cp: u32,
     pub max_cp: u32,
+
+    pub gear_effects: GearEffects,
 
     pub buffs: BuffStacks,
 
@@ -184,7 +195,13 @@ impl CraftState {
 
         let condition_bonus = {
             match self.step_state {
-                StepState::Good => 1.5,
+                StepState::Good => {
+                    if self.gear_effects.splendorous {
+                        1.75
+                    } else {
+                        1.5
+                    }
+                }
                 StepState::Excellent => 4.0,
                 StepState::Poor => 0.5,
                 _ => 1.0,
@@ -358,6 +375,7 @@ impl PartialEq for CraftState {
             && self.max_durability == other.max_durability
             && self.cp == other.cp
             && self.max_cp == other.max_cp
+            && self.gear_effects == other.gear_effects
             && self.buffs == other.buffs
     }
 }
@@ -374,6 +392,7 @@ impl Hash for CraftState {
         self.max_durability.hash(state);
         self.cp.hash(state);
         self.max_cp.hash(state);
+        self.gear_effects.hash(state);
         self.buffs.hash(state);
     }
 }

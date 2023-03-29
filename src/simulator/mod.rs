@@ -68,6 +68,8 @@ mod tests {
         progress: 2000,
         quality: 5200,
         durability: 80,
+
+        gear_effects: GearEffects { splendorous: false },
     };
 
     #[test]
@@ -88,6 +90,8 @@ mod tests {
             progress: 31,
             quality: 866,
             durability: 80,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -122,6 +126,8 @@ mod tests {
             progress: 31,
             quality: 866,
             durability: 80,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -158,6 +164,8 @@ mod tests {
             progress: 31,
             quality: 866,
             durability: 80,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -185,6 +193,8 @@ mod tests {
             progress: 31,
             quality: 866,
             durability: 80,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -359,6 +369,8 @@ mod tests {
             progress: 1000,
             quality: 5200,
             durability: 80,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -390,6 +402,8 @@ mod tests {
             progress: 3700,
             quality: 7400,
             durability: 80,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -421,6 +435,8 @@ mod tests {
             progress: 2050,
             quality: 9000,
             durability: 70,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -445,6 +461,8 @@ mod tests {
             progress: 3000,
             quality: 6700,
             durability: 70,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -471,6 +489,8 @@ mod tests {
             progress: 2000,
             quality: 5200,
             durability: 70,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -502,6 +522,8 @@ mod tests {
             progress: 3900,
             quality: 10920,
             durability: 70,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -539,6 +561,8 @@ mod tests {
             progress: 3000,
             quality: 6700,
             durability: 70,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -572,6 +596,8 @@ mod tests {
             progress: 5060,
             quality: 12628,
             durability: 70,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -610,6 +636,8 @@ mod tests {
             progress: 980,
             quality: 3420,
             durability: 80,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -815,6 +843,8 @@ mod tests {
             progress: 5059,
             quality: 15474,
             durability: 55,
+
+            gear_effects: Default::default(),
         };
 
         let mut craft_state = params.new_craft();
@@ -966,6 +996,30 @@ mod tests {
     }
 
     #[test]
+    fn splendorous_tools_should_have_boosted_good_modifier() {
+        let params = CraftParams {
+            job_level: 90,
+            craftsmanship: 4041,
+            control: 3987,
+            cp: 616,
+
+            recipe_level: 1,
+
+            progress: 9,
+            quality: 80,
+            durability: 80,
+
+            gear_effects: GearEffects { splendorous: true },
+        };
+        let mut craft_state = params.new_craft();
+
+        assert!(craft_state.play_action(ActionID::Observe));
+        craft_state.set_next_step_outcome(0.0, StepState::Good);
+        assert!(craft_state.play_action(ActionID::BasicTouch));
+        assert_eq!(craft_state.quality, 2387);
+    }
+
+    #[test]
     fn benchmark_rotation() {
         let params = CraftParams {
             job_level: 90,
@@ -978,6 +1032,8 @@ mod tests {
             progress: 3500,
             quality: 7200,
             durability: 80,
+
+            gear_effects: Default::default(),
         };
         let mut craft_state = params.new_craft();
 
@@ -1024,6 +1080,8 @@ mod tests {
             progress: 5077,
             quality: 14321,
             durability: 55,
+
+            gear_effects: Default::default(),
         };
         let mut craft_state = params.new_craft();
         // Action, Current State, Fail step?
@@ -1085,6 +1143,8 @@ mod tests {
             progress: 5095,
             quality: 14854,
             durability: 55,
+
+            gear_effects: Default::default(),
         };
         let mut craft_state = params.new_craft();
         // Action, Current State, Fail step?
@@ -1142,6 +1202,8 @@ mod tests {
             progress: 5470,
             quality: 16156,
             durability: 60,
+
+            gear_effects: Default::default(),
         };
         let mut craft_state = params.new_craft();
         // Action, Current State, Fail step?

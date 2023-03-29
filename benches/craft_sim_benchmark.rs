@@ -59,6 +59,8 @@ fn bench_craft(c: &mut Criterion) {
         progress: 3500,
         quality: 7200,
         durability: 80,
+
+        gear_effects: Default::default(),
     };
 
     c.bench_function("full_craft_no_validate", |b| {
