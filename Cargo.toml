@@ -3,6 +3,12 @@ name = "byregot"
 version = "0.2.0"
 authors = ["ff14wed"]
 edition = "2021"
+license = "MIT"
+description = "Byregot is yet another simulation library for crafting in FINAL FANTASY XIV, heavily inspired by the Teamcraft simulator."
+homepage = "https://github.com/ff14wed/byregot"
+repository = "https://github.com/ff14wed/byregot"
+readme = "README.md"
+keywords = ["ffxiv", "ff14"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
