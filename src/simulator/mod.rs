@@ -777,6 +777,36 @@ mod tests {
     }
 
     #[test]
+    fn good_omen_test() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+
+        assert!(craft_state.play_action(ActionID::MuscleMemory));
+
+        craft_state.set_next_step_outcome(0.0, StepState::GoodOmen);
+
+        assert!(craft_state.play_action(ActionID::BasicTouch));
+
+        assert_eq!(craft_state.max_cp - craft_state.cp, 6 + 18);
+        assert_eq!(craft_state.progress, 690);
+        assert_eq!(craft_state.quality, 299);
+        assert_eq!(craft_state.step_state, StepState::Good);
+
+        // Setting the next state outcome should not change the step state from
+        // poor
+        for _ in 0..50 {
+            craft_state.set_next_state_rng();
+            assert_eq!(craft_state.step_state, StepState::Good);
+        }
+
+        assert!(craft_state.play_action(ActionID::BasicTouch));
+
+        assert_eq!(craft_state.max_cp - craft_state.cp, 6 + 18 + 18);
+        assert_eq!(craft_state.progress, 690);
+        assert_eq!(craft_state.quality, 792);
+        assert_eq!(craft_state.step_state, StepState::Normal);
+    }
+
+    #[test]
     fn pliant_step_state_should_reduce_cp() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 

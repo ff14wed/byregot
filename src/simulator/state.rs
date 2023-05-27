@@ -18,6 +18,7 @@ pub enum StepState {
     Pliant,
     Malleable,
     Primed,
+    GoodOmen,
 }
 
 pub struct CraftParams {
@@ -66,9 +67,11 @@ impl CraftParams {
             basic_touch_combo: 0,
 
             step_state: StepState::Normal,
+            next_success_rng: 0.0,
+
             was_primed: false,
             was_excellent: false,
-            next_success_rng: 0.0,
+            was_good_omen: false,
 
             recipe_level: self.recipe_level,
             base_progress: self.get_base_progress().floor(),
@@ -130,6 +133,7 @@ pub struct CraftState {
 
     pub(super) was_primed: bool,
     pub(super) was_excellent: bool,
+    pub(super) was_good_omen: bool,
 
     recipe_level: u32,
     base_progress: f64,
@@ -234,6 +238,9 @@ impl CraftState {
         if self.was_excellent {
             return (&[StepState::Poor], &[1.]);
         }
+        if self.was_good_omen {
+            return (&[StepState::Good], &[1.]);
+        }
         match self.recipe_level {
             511 | 512 | 514 => (
                 &[
@@ -278,6 +285,30 @@ impl CraftState {
                     StepState::Primed,
                 ],
                 &[0.34, 0.12, 0.15, 0.15, 0.12, 0.12],
+            ),
+            621 => (
+                &[
+                    StepState::Normal,
+                    StepState::Good,
+                    StepState::Centered,
+                    StepState::Sturdy,
+                    StepState::Pliant,
+                    StepState::Malleable,
+                    StepState::Primed,
+                ],
+                &[0.22, 0.12, 0.15, 0.15, 0.12, 0.12, 0.12],
+            ),
+            641 => (
+                &[
+                    StepState::Normal,
+                    StepState::Good,
+                    StepState::Sturdy,
+                    StepState::Pliant,
+                    StepState::Malleable,
+                    StepState::Primed,
+                    StepState::GoodOmen,
+                ],
+                &[0.25, 0.12, 0.15, 0.12, 0.12, 0.12, 0.12],
             ),
             _ => (
                 &[StepState::Normal, StepState::Good, StepState::Excellent],

@@ -82,11 +82,15 @@ impl Change for Step {
 
         state.was_excellent = state.step_state == state::StepState::Excellent;
         state.was_primed = state.step_state == state::StepState::Primed;
+        state.was_good_omen = state.step_state == state::StepState::GoodOmen;
 
         state.reset_rng();
 
         if state.was_excellent {
             state.step_state = state::StepState::Poor;
+        }
+        if state.was_good_omen {
+            state.step_state = state::StepState::Good;
         }
     }
 

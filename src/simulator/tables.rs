@@ -671,7 +671,7 @@ pub(super) static RECIPE_LEVEL_TABLE: &[RecipeLevelModifiers; 651] = &[
     RecipeLevelModifiers(130, 115, 80, 70),
     RecipeLevelModifiers(130, 115, 80, 70),
     RecipeLevelModifiers(130, 115, 80, 70),
-    RecipeLevelModifiers(130, 115, 80, 70),
+    RecipeLevelModifiers(180, 180, 100, 100),
     RecipeLevelModifiers(130, 115, 80, 70),
     RecipeLevelModifiers(130, 115, 80, 70),
     RecipeLevelModifiers(130, 115, 80, 70),
