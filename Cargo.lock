@@ -45,7 +45,7 @@ checksum = "8f1e260c3a9040a7c19a12468758f4c16f31a81a1fe087482be9570ec864bb6c"
 
 [[package]]
 name = "byregot"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "criterion",
  "num-derive",
