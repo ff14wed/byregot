@@ -308,7 +308,7 @@ impl CraftState {
                     StepState::Primed,
                     StepState::GoodOmen,
                 ],
-                &[0.25, 0.12, 0.15, 0.12, 0.12, 0.12, 0.12],
+                &[0.33, 0.04, 0.15, 0.10, 0.115, 0.145, 0.12],
             ),
             _ => (
                 &[StepState::Normal, StepState::Good, StepState::Excellent],
