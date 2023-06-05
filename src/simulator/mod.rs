@@ -7,39 +7,70 @@ pub use state::*;
 
 use std::ops::Index;
 
-use num_derive::FromPrimitive;
+use strum::{AsRefStr, EnumString, FromRepr};
 
-#[derive(Debug, Copy, Clone, FromPrimitive)]
+#[derive(Debug, Copy, Clone, FromRepr, AsRefStr, EnumString)]
+#[repr(u8)]
 pub enum ActionID {
+    #[strum(serialize = "Basic Synthesis")]
     BasicSynthesis = 0,
+    #[strum(serialize = "Basic Touch")]
     BasicTouch,
+    #[strum(serialize = "Master's Mend")]
     MastersMend,
+    #[strum(serialize = "Hasty Touch")]
     HastyTouch,
+    #[strum(serialize = "Rapid Synthesis")]
     RapidSynthesis,
+    #[strum(serialize = "Observe")]
     Observe,
+    #[strum(serialize = "Tricks of the Trade")]
     TricksOfTheTrade,
+    #[strum(serialize = "Waste Not")]
     WasteNot,
+    #[strum(serialize = "Veneration")]
     Veneration,
+    #[strum(serialize = "Standard Touch")]
     StandardTouch,
+    #[strum(serialize = "Great Strides")]
     GreatStrides,
+    #[strum(serialize = "Innovation")]
     Innovation,
+    #[strum(serialize = "Final Appraisal")]
     FinalAppraisal,
+    #[strum(serialize = "Waste Not II")]
     WasteNotII,
+    #[strum(serialize = "Byregot's Blessing")]
     ByregotsBlessing,
+    #[strum(serialize = "Precise Touch")]
     PreciseTouch,
+    #[strum(serialize = "Muscle Memory")]
     MuscleMemory,
+    #[strum(serialize = "Careful Synthesis")]
     CarefulSynthesis,
+    #[strum(serialize = "Manipulation")]
     Manipulation,
+    #[strum(serialize = "Prudent Touch")]
     PrudentTouch,
+    #[strum(serialize = "Focused Synthesis")]
     FocusedSynthesis,
+    #[strum(serialize = "Focused Touch")]
     FocusedTouch,
+    #[strum(serialize = "Reflect")]
     Reflect,
+    #[strum(serialize = "Preparatory Touch")]
     PreparatoryTouch,
+    #[strum(serialize = "Groundwork")]
     Groundwork,
+    #[strum(serialize = "Delicate Synthesis")]
     DelicateSynthesis,
+    #[strum(serialize = "Intensive Synthesis")]
     IntensiveSynthesis,
+    #[strum(serialize = "Advanced Touch")]
     AdvancedTouch,
+    #[strum(serialize = "Prudent Synthesis")]
     PrudentSynthesis,
+    #[strum(serialize = "Trained Finesse")]
     TrainedFinesse,
 }
 
@@ -53,6 +84,8 @@ impl Index<ActionID> for ActionList {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
 
     #[allow(dead_code)]
@@ -75,6 +108,15 @@ mod tests {
     #[test]
     fn action_list_is_populated() {
         assert_eq!(ACTIONS.len(), ActionID::TrainedFinesse as usize + 1);
+    }
+
+    #[test]
+    fn action_id_serde() {
+        assert_eq!(ActionID::ByregotsBlessing.as_ref(), "Byregot's Blessing");
+        assert!(matches!(
+            ActionID::from_str("Byregot's Blessing").unwrap(),
+            ActionID::ByregotsBlessing
+        ));
     }
 
     #[test]
