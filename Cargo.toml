@@ -13,12 +13,12 @@ keywords = ["ffxiv", "ff14"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rand = "0.8.4"
-rand_distr = "0.4.1"
+rand = "0.8.5"
+rand_distr = "0.4.3"
 strum = { version = "0.24", features = ["derive"] }
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.5"
 
 [[bench]]
 name = "craft_sim_benchmark"
