@@ -62,6 +62,8 @@ impl CraftParams {
 
             buffs: Default::default(),
 
+            did_trained_perfection: false,
+
             did_observe: false,
             prev_basic_touch_combo: 0,
             basic_touch_combo: 0,
@@ -124,6 +126,8 @@ pub struct CraftState {
 
     pub buffs: BuffStacks,
 
+    pub did_trained_perfection: bool,
+
     pub did_observe: bool,
     pub prev_basic_touch_combo: u8,
     pub basic_touch_combo: u8,
@@ -151,6 +155,8 @@ pub struct BuffStacks {
     pub waste_not: u8,
     pub waste_not2: u8,
     pub final_appraisal: u8,
+    pub expedience: u8,
+    pub trained_perfection: u8,
 }
 
 impl CraftState {
@@ -329,6 +335,9 @@ impl CraftState {
     }
 
     pub(super) fn get_durability_cost(&self, base_cost: u32) -> u32 {
+        if self.buffs.trained_perfection > 0 {
+            return 0;
+        }
         let mut divider: f32 = 1.;
         if self.buffs.waste_not > 0 || self.buffs.waste_not2 > 0 {
             divider *= 2.;

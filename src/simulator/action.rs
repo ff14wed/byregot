@@ -76,6 +76,10 @@ impl Change for Step {
         if state.buffs.final_appraisal > 0 {
             state.buffs.final_appraisal -= 1;
         }
+        if state.buffs.expedience > 0 {
+            state.buffs.expedience -= 1;
+        }
+
         state.did_observe = false;
         state.prev_basic_touch_combo = state.basic_touch_combo;
         state.basic_touch_combo = 0;
@@ -145,7 +149,12 @@ impl Change for CPCost {
 struct DurabilityCost(u32);
 impl Change for DurabilityCost {
     fn execute(&self, state: &mut state::CraftState) {
-        state.durability -= state.get_durability_cost(self.0) as i32;
+        let cost = state.get_durability_cost(self.0) as i32;
+        if state.buffs.trained_perfection > 0 && cost > 0 {
+            state.buffs.trained_perfection = 0;
+            return;
+        }
+        state.durability -= cost;
     }
 }
 
@@ -170,15 +179,6 @@ impl Change for ConditionalIncreaseInnerQuiet {
     fn execute(&self, state: &mut state::CraftState) {
         if state.is_step_success(self.1) {
             state.buffs.inner_quiet = cmp::min(10, state.buffs.inner_quiet + self.0);
-        }
-    }
-}
-
-struct SuccessIfObserve;
-impl Change for SuccessIfObserve {
-    fn execute(&self, state: &mut state::CraftState) {
-        if state.did_observe {
-            state.set_next_step_outcome(0.0, state.step_state);
         }
     }
 }
@@ -221,7 +221,7 @@ impl Change for StandardTouchCombo {
 struct AdvancedTouchCPCost;
 impl Change for AdvancedTouchCPCost {
     fn execute(&self, state: &mut state::CraftState) {
-        if state.basic_touch_combo == 2 {
+        if state.basic_touch_combo == 2 || state.did_observe {
             state.cp -= 18;
         } else {
             state.cp -= 46;
@@ -389,6 +389,45 @@ impl Change for TrainedFinesseRequirement {
     }
 }
 
+struct RefinedTouchConditionalInnerQuiet;
+impl Change for RefinedTouchConditionalInnerQuiet {
+    fn execute(&self, state: &mut state::CraftState) {
+        if state.basic_touch_combo == 1 {
+            state.buffs.inner_quiet += 2;
+        } else {
+            state.buffs.inner_quiet += 1;
+        }
+    }
+}
+
+struct Expedience;
+impl Change for Expedience {
+    fn execute(&self, state: &mut state::CraftState) {
+        // Buff duration bonuses do not apply to Expedience
+        state.buffs.expedience = 1;
+    }
+}
+
+struct ExpedienceRequirement;
+impl Change for ExpedienceRequirement {
+    fn execute(&self, _state: &mut state::CraftState) {}
+    fn validate(&self, state: &state::CraftState) -> bool {
+        state.buffs.expedience == 1
+    }
+}
+
+struct TrainedPerfection;
+impl Change for TrainedPerfection {
+    fn execute(&self, state: &mut state::CraftState) {
+        state.did_trained_perfection = true;
+        state.buffs.trained_perfection = 1;
+    }
+
+    fn validate(&self, state: &state::CraftState) -> bool {
+        !state.did_trained_perfection
+    }
+}
+
 const BASIC_SYNTHESIS: Action =
     change_set!(CPCost(0), IncreaseProgress(120), DurabilityCost(10), Step);
 
@@ -408,7 +447,8 @@ const HASTY_TOUCH: Action = change_set!(
     ConditionalIncreaseQuality(100, 0.6),
     ConditionalIncreaseInnerQuiet(1, 0.6),
     DurabilityCost(10),
-    Step
+    Step,
+    Expedience
 );
 
 const RAPID_SYNTHESIS: Action = change_set!(
@@ -476,23 +516,6 @@ const PRUDENT_TOUCH: Action = change_set!(
     Step
 );
 
-const FOCUSED_SYNTHESIS: Action = change_set!(
-    CPCost(5),
-    SuccessIfObserve,
-    ConditionalIncreaseProgress(200, 0.5),
-    DurabilityCost(10),
-    Step
-);
-
-const FOCUSED_TOUCH: Action = change_set!(
-    CPCost(18),
-    SuccessIfObserve,
-    ConditionalIncreaseQuality(150, 0.5),
-    ConditionalIncreaseInnerQuiet(1, 0.5),
-    DurabilityCost(10),
-    Step
-);
-
 const REFLECT: Action = change_set!(CPCost(6), IncreaseQuality(100), DurabilityCost(10), Reflect);
 
 const PREPARATORY_TOUCH: Action = change_set!(
@@ -546,7 +569,28 @@ const TRAINED_FINESSE: Action = change_set!(
     Step
 );
 
-pub const NUM_ACTIONS: usize = 30;
+const REFINED_TOUCH: Action = change_set!(
+    CPCost(18),
+    IncreaseQuality(100),
+    RefinedTouchConditionalInnerQuiet,
+    DurabilityCost(10),
+    Step
+);
+
+const DARING_TOUCH: Action = change_set!(
+    CPCost(18),
+    ExpedienceRequirement,
+    ConditionalIncreaseQuality(150, 0.6),
+    ConditionalIncreaseInnerQuiet(1, 0.6),
+    DurabilityCost(10),
+    Step
+);
+
+const IMMACULATE_MEND: Action = change_set!(CPCost(112), IncreaseDurability(80), Step);
+
+const TRAINED_PERFECTION: Action = change_set!(CPCost(0), Step, TrainedPerfection);
+
+pub const NUM_ACTIONS: usize = 32;
 pub(super) type ActionList = [Action; NUM_ACTIONS];
 
 /// Actions with a difference:
@@ -573,8 +617,6 @@ pub(super) const ACTIONS: ActionList = [
     CAREFUL_SYNTHESIS,
     MANIPULATION,
     PRUDENT_TOUCH,
-    FOCUSED_SYNTHESIS,
-    FOCUSED_TOUCH,
     REFLECT,
     PREPARATORY_TOUCH,
     GROUNDWORK,
@@ -583,13 +625,17 @@ pub(super) const ACTIONS: ActionList = [
     ADVANCED_TOUCH,
     PRUDENT_SYNTHESIS,
     TRAINED_FINESSE,
+    REFINED_TOUCH,
+    DARING_TOUCH,
+    IMMACULATE_MEND,
+    TRAINED_PERFECTION,
 ];
 
 pub(super) fn get_valid_action_mask(craft_state: &state::CraftState) -> [bool; NUM_ACTIONS] {
     let mut mask: [bool; NUM_ACTIONS] = Default::default();
 
-    let actions1 = &ACTIONS[0..15];
-    let actions2 = &ACTIONS[15..NUM_ACTIONS];
+    let actions1 = &ACTIONS[0..16];
+    let actions2 = &ACTIONS[16..NUM_ACTIONS];
 
     for (i, action) in actions1.iter().enumerate() {
         mask[i] = action.validate(&craft_state);
