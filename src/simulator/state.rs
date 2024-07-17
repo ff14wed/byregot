@@ -1,11 +1,12 @@
 use std::hash::{Hash, Hasher};
 
-use super::action::{get_valid_action_mask, Change, ACTIONS, NUM_ACTIONS};
 use super::tables;
-use super::ActionID;
+use super::Actions;
+use super::Change;
 
 use rand::distributions::WeightedIndex;
 use rand::prelude::*;
+use strum::EnumCount;
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum StepState {
@@ -373,22 +374,22 @@ impl CraftState {
 
     /// get_valid_action_mask returns a bool mask of valid actions for the next
     /// step, where "true" means valid.
-    pub fn get_valid_action_mask(&self) -> [bool; NUM_ACTIONS] {
-        get_valid_action_mask(self)
+    pub fn get_valid_action_mask(&self) -> [bool; Actions::COUNT] {
+        Actions::valid_action_mask(self)
     }
 
     /// play_action_no_validate makes no attempt to validate the action; it should
     /// be checked beforehand
-    pub fn play_action_no_validate(&mut self, action_id: ActionID) {
-        ACTIONS[action_id].execute(self)
+    pub fn play_action_no_validate(&mut self, action: Actions) {
+        action.get().execute(self)
     }
 
     /// play_action returns true if the action was validated and executed. False
     /// otherwise.
-    pub fn play_action(&mut self, action_id: ActionID) -> bool {
-        let valid_action = ACTIONS[action_id].validate(self);
+    pub fn play_action(&mut self, action: Actions) -> bool {
+        let valid_action = action.get().validate(self);
         if valid_action {
-            ACTIONS[action_id].execute(self);
+            action.get().execute(self);
             return true;
         }
         false

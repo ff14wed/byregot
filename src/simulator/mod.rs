@@ -29,16 +29,11 @@ mod tests {
     };
 
     #[test]
-    fn action_list_is_populated() {
-        assert_eq!(ACTIONS.len(), ActionID::TrainedFinesse as usize + 1);
-    }
-
-    #[test]
     fn action_id_serde() {
-        assert_eq!(ActionID::ByregotsBlessing.as_ref(), "Byregot's Blessing");
+        assert_eq!(Actions::ByregotsBlessing.as_ref(), "Byregot's Blessing");
         assert!(matches!(
-            ActionID::from_str("Byregot's Blessing").unwrap(),
-            ActionID::ByregotsBlessing
+            Actions::from_str("Byregot's Blessing").unwrap(),
+            Actions::ByregotsBlessing
         ));
     }
 
@@ -61,9 +56,9 @@ mod tests {
 
         let mut craft_state = params.new_craft();
         let actions_to_execute = vec![
-            ActionID::Reflect,
-            ActionID::BasicTouch,
-            ActionID::CarefulSynthesis,
+            Actions::Reflect,
+            Actions::BasicTouch,
+            Actions::CarefulSynthesis,
         ];
 
         for a in actions_to_execute {
@@ -97,16 +92,16 @@ mod tests {
 
         let mut craft_state = params.new_craft();
 
-        assert!(craft_state.play_action(ActionID::Reflect));
+        assert!(craft_state.play_action(Actions::Reflect));
         assert_eq!(craft_state.quality, 817);
 
-        assert!(craft_state.play_action(ActionID::BasicTouch));
+        assert!(craft_state.play_action(Actions::BasicTouch));
         assert_eq!(craft_state.quality, 1797);
 
-        assert!(craft_state.play_action(ActionID::ByregotsBlessing));
+        assert!(craft_state.play_action(Actions::ByregotsBlessing));
         assert_eq!(craft_state.quality, 3496);
 
-        assert!(craft_state.play_action(ActionID::CarefulSynthesis));
+        assert!(craft_state.play_action(Actions::CarefulSynthesis));
 
         assert!(craft_state.is_finished());
         assert_eq!(craft_state.progress, 822);
@@ -135,13 +130,13 @@ mod tests {
 
         let mut craft_state = params.new_craft();
 
-        assert!(craft_state.play_action(ActionID::Reflect));
+        assert!(craft_state.play_action(Actions::Reflect));
         assert_eq!(craft_state.quality, 817);
 
-        assert!(craft_state.play_action(ActionID::Innovation));
-        assert!(craft_state.play_action(ActionID::GreatStrides));
+        assert!(craft_state.play_action(Actions::Innovation));
+        assert!(craft_state.play_action(Actions::GreatStrides));
 
-        assert!(craft_state.play_action(ActionID::BasicTouch));
+        assert!(craft_state.play_action(Actions::BasicTouch));
         assert_eq!(craft_state.quality, 3268);
     }
 
@@ -165,19 +160,19 @@ mod tests {
         let mut craft_state = params.new_craft();
 
         let actions_to_execute = vec![
-            ActionID::Reflect,
-            ActionID::BasicTouch,
-            ActionID::BasicTouch,
-            ActionID::MastersMend,
-            ActionID::BasicTouch,
-            ActionID::BasicTouch,
-            ActionID::BasicTouch,
-            ActionID::MastersMend,
-            ActionID::BasicTouch,
-            ActionID::BasicTouch,
-            ActionID::BasicTouch,
-            ActionID::ByregotsBlessing,
-            ActionID::CarefulSynthesis,
+            Actions::Reflect,
+            Actions::BasicTouch,
+            Actions::BasicTouch,
+            Actions::MastersMend,
+            Actions::BasicTouch,
+            Actions::BasicTouch,
+            Actions::BasicTouch,
+            Actions::MastersMend,
+            Actions::BasicTouch,
+            Actions::BasicTouch,
+            Actions::BasicTouch,
+            Actions::ByregotsBlessing,
+            Actions::CarefulSynthesis,
         ];
 
         for a in actions_to_execute {
@@ -196,28 +191,28 @@ mod tests {
     fn innovation_test() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
-        assert!(craft_state.play_action(ActionID::Reflect));
+        assert!(craft_state.play_action(Actions::Reflect));
         assert_eq!(craft_state.quality, 299);
 
-        assert!(craft_state.play_action(ActionID::DelicateSynthesis));
+        assert!(craft_state.play_action(Actions::DelicateSynthesis));
         assert_eq!(craft_state.quality, 657);
 
-        assert!(craft_state.play_action(ActionID::DelicateSynthesis));
+        assert!(craft_state.play_action(Actions::DelicateSynthesis));
         assert_eq!(craft_state.quality, 1045);
 
-        assert!(craft_state.play_action(ActionID::WasteNot));
-        assert!(craft_state.play_action(ActionID::Groundwork));
-        assert!(craft_state.play_action(ActionID::Innovation));
+        assert!(craft_state.play_action(Actions::WasteNot));
+        assert!(craft_state.play_action(Actions::Groundwork));
+        assert!(craft_state.play_action(Actions::Innovation));
 
-        assert!(craft_state.play_action(ActionID::PreparatoryTouch));
+        assert!(craft_state.play_action(Actions::PreparatoryTouch));
         assert_eq!(craft_state.quality, 2300);
 
-        assert!(craft_state.play_action(ActionID::PreparatoryTouch));
+        assert!(craft_state.play_action(Actions::PreparatoryTouch));
         assert_eq!(craft_state.quality, 3735);
 
-        assert!(craft_state.play_action(ActionID::MastersMend));
+        assert!(craft_state.play_action(Actions::MastersMend));
 
-        assert!(craft_state.play_action(ActionID::PreparatoryTouch));
+        assert!(craft_state.play_action(Actions::PreparatoryTouch));
         assert_eq!(craft_state.quality, 5349);
 
         assert!(!craft_state.is_finished());
@@ -234,14 +229,14 @@ mod tests {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
         let actions_to_execute = vec![
-            ActionID::Reflect,
-            ActionID::WasteNotII,
-            ActionID::PreparatoryTouch,
-            ActionID::PreparatoryTouch,
-            ActionID::PreparatoryTouch,
-            ActionID::PreparatoryTouch,
-            ActionID::PreparatoryTouch,
-            ActionID::Innovation,
+            Actions::Reflect,
+            Actions::WasteNotII,
+            Actions::PreparatoryTouch,
+            Actions::PreparatoryTouch,
+            Actions::PreparatoryTouch,
+            Actions::PreparatoryTouch,
+            Actions::PreparatoryTouch,
+            Actions::Innovation,
         ];
 
         for a in actions_to_execute {
@@ -251,7 +246,7 @@ mod tests {
         assert_eq!(craft_state.quality, 5081);
 
         craft_state.set_next_step_outcome(0.0, StepState::Good);
-        craft_state.play_action(ActionID::PreparatoryTouch);
+        craft_state.play_action(Actions::PreparatoryTouch);
         assert_eq!(craft_state.quality, 7772);
     }
 
@@ -259,8 +254,8 @@ mod tests {
     fn basic_touch_combo_test() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
-        assert!(craft_state.play_action(ActionID::StandardTouch));
-        assert!(craft_state.play_action(ActionID::AdvancedTouch));
+        assert!(craft_state.play_action(Actions::StandardTouch));
+        assert!(craft_state.play_action(Actions::AdvancedTouch));
 
         // Since Standard Touch and Advanced Touch were not comboed, there
         // should be no CP discount.
@@ -268,9 +263,9 @@ mod tests {
 
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
-        assert!(craft_state.play_action(ActionID::BasicTouch));
-        assert!(craft_state.play_action(ActionID::StandardTouch));
-        assert!(craft_state.play_action(ActionID::AdvancedTouch));
+        assert!(craft_state.play_action(Actions::BasicTouch));
+        assert!(craft_state.play_action(Actions::StandardTouch));
+        assert!(craft_state.play_action(Actions::AdvancedTouch));
 
         // Since Standard Touch and Advanced Touch were part of the combo, there
         // should be CP discounts.
@@ -282,9 +277,9 @@ mod tests {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
         let actions_to_execute = vec![
-            ActionID::BasicTouch,
-            ActionID::StandardTouch,
-            ActionID::StandardTouch,
+            Actions::BasicTouch,
+            Actions::StandardTouch,
+            Actions::StandardTouch,
         ];
 
         for a in actions_to_execute {
@@ -295,7 +290,7 @@ mod tests {
 
         // The combo was broken, so there should be no CP discount for
         // Advanced Touch
-        assert!(craft_state.play_action(ActionID::AdvancedTouch));
+        assert!(craft_state.play_action(Actions::AdvancedTouch));
         assert_eq!(craft_state.max_cp - craft_state.cp, 18 + 18 + 32 + 46);
     }
 
@@ -304,9 +299,9 @@ mod tests {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
         let actions_to_execute = vec![
-            ActionID::BasicTouch,
-            ActionID::GreatStrides,
-            ActionID::StandardTouch,
+            Actions::BasicTouch,
+            Actions::GreatStrides,
+            Actions::StandardTouch,
         ];
 
         for a in actions_to_execute {
@@ -317,7 +312,7 @@ mod tests {
 
         // The combo was broken, so there should be no CP discount for
         // Advanced Touch
-        assert!(craft_state.play_action(ActionID::AdvancedTouch));
+        assert!(craft_state.play_action(Actions::AdvancedTouch));
         assert_eq!(craft_state.max_cp - craft_state.cp, 18 + 32 + 32 + 46);
     }
 
@@ -340,9 +335,9 @@ mod tests {
 
         let mut craft_state = params.new_craft();
         let actions_to_execute = vec![
-            ActionID::Reflect,
-            ActionID::BasicSynthesis,
-            ActionID::BasicTouch,
+            Actions::Reflect,
+            Actions::BasicSynthesis,
+            Actions::BasicTouch,
         ];
 
         for a in actions_to_execute {
@@ -373,9 +368,9 @@ mod tests {
 
         let mut craft_state = params.new_craft();
         let actions_to_execute = vec![
-            ActionID::Reflect,
-            ActionID::BasicSynthesis,
-            ActionID::BasicTouch,
+            Actions::Reflect,
+            Actions::BasicSynthesis,
+            Actions::BasicTouch,
         ];
 
         for a in actions_to_execute {
@@ -406,10 +401,10 @@ mod tests {
 
         let mut craft_state = params.new_craft();
 
-        assert!(craft_state.play_action(ActionID::BasicSynthesis));
+        assert!(craft_state.play_action(Actions::BasicSynthesis));
         assert_eq!(craft_state.progress, 230);
 
-        assert!(craft_state.play_action(ActionID::BasicTouch));
+        assert!(craft_state.play_action(Actions::BasicTouch));
         assert_eq!(craft_state.quality, 217);
     }
 
@@ -432,7 +427,7 @@ mod tests {
 
         let mut craft_state = params.new_craft();
 
-        let actions_to_execute = vec![ActionID::CarefulSynthesis];
+        let actions_to_execute = vec![Actions::CarefulSynthesis];
 
         for a in actions_to_execute {
             assert!(craft_state.play_action(a));
@@ -461,10 +456,10 @@ mod tests {
         let mut craft_state = params.new_craft();
 
         let actions_to_execute = vec![
-            ActionID::BasicTouch,
-            ActionID::BasicTouch,
-            ActionID::BasicTouch,
-            ActionID::BasicTouch,
+            Actions::BasicTouch,
+            Actions::BasicTouch,
+            Actions::BasicTouch,
+            Actions::BasicTouch,
         ];
 
         for a in actions_to_execute {
@@ -494,13 +489,13 @@ mod tests {
         let mut craft_state = params.new_craft();
 
         let actions_to_execute = [
-            ActionID::MuscleMemory,
-            ActionID::Veneration,
-            ActionID::Groundwork,
-            ActionID::Groundwork,
-            ActionID::Observe,
-            ActionID::Observe,
-            ActionID::CarefulSynthesis,
+            Actions::MuscleMemory,
+            Actions::Veneration,
+            Actions::Groundwork,
+            Actions::Groundwork,
+            Actions::Observe,
+            Actions::Observe,
+            Actions::CarefulSynthesis,
         ];
 
         assert!(craft_state.play_action(actions_to_execute[0]));
@@ -533,10 +528,10 @@ mod tests {
         let mut craft_state = params.new_craft();
 
         let actions_to_execute = [
-            ActionID::Innovation,
-            ActionID::BasicTouch,
-            ActionID::StandardTouch,
-            ActionID::BasicTouch,
+            Actions::Innovation,
+            Actions::BasicTouch,
+            Actions::StandardTouch,
+            Actions::BasicTouch,
         ];
 
         for a in &actions_to_execute[0..3] {
@@ -568,15 +563,15 @@ mod tests {
         let mut craft_state = params.new_craft();
 
         let actions_to_execute = [
-            ActionID::MuscleMemory,
-            ActionID::Manipulation,
-            ActionID::Veneration,
-            ActionID::WasteNotII,
-            ActionID::Groundwork,
-            ActionID::Groundwork,
-            ActionID::DelicateSynthesis,
-            ActionID::PreparatoryTouch,
-            ActionID::PreparatoryTouch,
+            Actions::MuscleMemory,
+            Actions::Manipulation,
+            Actions::Veneration,
+            Actions::WasteNotII,
+            Actions::Groundwork,
+            Actions::Groundwork,
+            Actions::DelicateSynthesis,
+            Actions::PreparatoryTouch,
+            Actions::PreparatoryTouch,
         ];
 
         for a in &actions_to_execute[0..8] {
@@ -608,10 +603,10 @@ mod tests {
         let mut craft_state = params.new_craft();
 
         let actions_to_execute = vec![
-            ActionID::Innovation,
-            ActionID::PrudentTouch,
-            ActionID::PrudentTouch,
-            ActionID::PrudentTouch,
+            Actions::Innovation,
+            Actions::PrudentTouch,
+            Actions::PrudentTouch,
+            Actions::PrudentTouch,
         ];
 
         for a in actions_to_execute {
@@ -625,8 +620,8 @@ mod tests {
     fn invalid_step_should_not_execute() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
-        assert!(craft_state.play_action(ActionID::GreatStrides));
-        assert!(!craft_state.play_action(ActionID::TricksOfTheTrade));
+        assert!(craft_state.play_action(Actions::GreatStrides));
+        assert!(!craft_state.play_action(Actions::TricksOfTheTrade));
 
         assert_eq!(craft_state.buffs.great_strides, 3);
         assert_eq!(craft_state.max_cp - craft_state.cp, 32);
@@ -637,7 +632,7 @@ mod tests {
     fn final_appraisal_should_not_tick_buffs() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
-        let actions_to_execute = vec![ActionID::GreatStrides, ActionID::FinalAppraisal];
+        let actions_to_execute = vec![Actions::GreatStrides, Actions::FinalAppraisal];
 
         for a in actions_to_execute {
             assert!(craft_state.play_action(a));
@@ -653,11 +648,11 @@ mod tests {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
         let actions_to_execute = vec![
-            ActionID::MuscleMemory,
-            ActionID::Manipulation,
-            ActionID::BasicTouch,
-            ActionID::Veneration,
-            ActionID::Groundwork,
+            Actions::MuscleMemory,
+            Actions::Manipulation,
+            Actions::BasicTouch,
+            Actions::Veneration,
+            Actions::Groundwork,
         ];
 
         for a in actions_to_execute {
@@ -670,56 +665,14 @@ mod tests {
     }
 
     #[test]
-    fn focused_synthesis_should_chain_from_observe() {
-        let mut craft_state = GENERIC_PARAMS.new_craft();
-
-        assert!(craft_state.play_action(ActionID::MuscleMemory));
-        assert_eq!(craft_state.progress, 690);
-
-        craft_state.set_next_step_outcome(1.0, StepState::Normal);
-        assert!(craft_state.play_action(ActionID::FocusedSynthesis));
-        assert_eq!(craft_state.progress, 690);
-
-        assert!(craft_state.play_action(ActionID::Observe));
-
-        craft_state.set_next_step_outcome(1.0, StepState::Normal);
-        assert!(craft_state.play_action(ActionID::FocusedSynthesis));
-
-        assert_eq!(craft_state.max_cp - craft_state.cp, 6 + 5 + 7 + 5);
-        assert_eq!(craft_state.progress, 1610);
-        assert_eq!(craft_state.quality, 0);
-    }
-
-    #[test]
-    fn focused_touch_should_chain_from_observe() {
-        let mut craft_state = GENERIC_PARAMS.new_craft();
-
-        assert!(craft_state.play_action(ActionID::MuscleMemory));
-
-        craft_state.set_next_step_outcome(1.0, StepState::Normal);
-        assert!(craft_state.play_action(ActionID::FocusedTouch));
-
-        assert_eq!(craft_state.quality, 0);
-
-        assert!(craft_state.play_action(ActionID::Observe));
-
-        craft_state.set_next_step_outcome(1.0, StepState::Normal);
-        assert!(craft_state.play_action(ActionID::FocusedTouch));
-
-        assert_eq!(craft_state.max_cp - craft_state.cp, 6 + 18 + 7 + 18);
-        assert_eq!(craft_state.progress, 690);
-        assert_eq!(craft_state.quality, 448);
-    }
-
-    #[test]
     fn excellent_test() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
-        assert!(craft_state.play_action(ActionID::MuscleMemory));
+        assert!(craft_state.play_action(Actions::MuscleMemory));
 
         craft_state.set_next_step_outcome(0.0, StepState::Excellent);
 
-        assert!(craft_state.play_action(ActionID::BasicTouch));
+        assert!(craft_state.play_action(Actions::BasicTouch));
 
         assert_eq!(craft_state.max_cp - craft_state.cp, 6 + 18);
         assert_eq!(craft_state.progress, 690);
@@ -733,7 +686,7 @@ mod tests {
             assert_eq!(craft_state.step_state, StepState::Poor);
         }
 
-        assert!(craft_state.play_action(ActionID::BasicTouch));
+        assert!(craft_state.play_action(Actions::BasicTouch));
 
         assert_eq!(craft_state.max_cp - craft_state.cp, 6 + 18 + 18);
         assert_eq!(craft_state.progress, 690);
@@ -745,11 +698,11 @@ mod tests {
     fn good_omen_test() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
-        assert!(craft_state.play_action(ActionID::MuscleMemory));
+        assert!(craft_state.play_action(Actions::MuscleMemory));
 
         craft_state.set_next_step_outcome(0.0, StepState::GoodOmen);
 
-        assert!(craft_state.play_action(ActionID::BasicTouch));
+        assert!(craft_state.play_action(Actions::BasicTouch));
 
         assert_eq!(craft_state.max_cp - craft_state.cp, 6 + 18);
         assert_eq!(craft_state.progress, 690);
@@ -763,7 +716,7 @@ mod tests {
             assert_eq!(craft_state.step_state, StepState::Good);
         }
 
-        assert!(craft_state.play_action(ActionID::BasicTouch));
+        assert!(craft_state.play_action(Actions::BasicTouch));
 
         assert_eq!(craft_state.max_cp - craft_state.cp, 6 + 18 + 18);
         assert_eq!(craft_state.progress, 690);
@@ -775,11 +728,11 @@ mod tests {
     fn pliant_step_state_should_reduce_cp() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
-        assert!(craft_state.play_action(ActionID::MuscleMemory));
+        assert!(craft_state.play_action(Actions::MuscleMemory));
 
         craft_state.set_next_step_outcome(0.0, StepState::Pliant);
 
-        assert!(craft_state.play_action(ActionID::WasteNot));
+        assert!(craft_state.play_action(Actions::WasteNot));
 
         assert_eq!(craft_state.max_cp - craft_state.cp, 6 + (56 / 2));
     }
@@ -790,7 +743,7 @@ mod tests {
 
         craft_state.set_next_step_outcome(0.0, StepState::Pliant);
 
-        assert!(craft_state.play_action(ActionID::PrudentTouch));
+        assert!(craft_state.play_action(Actions::PrudentTouch));
 
         assert_eq!(craft_state.max_cp - craft_state.cp, 13);
     }
@@ -801,7 +754,7 @@ mod tests {
 
         craft_state.set_next_step_outcome(0.0, StepState::Sturdy);
 
-        assert!(craft_state.play_action(ActionID::PrudentTouch));
+        assert!(craft_state.play_action(Actions::PrudentTouch));
 
         assert_eq!(
             craft_state.max_durability as i32 - craft_state.durability,
@@ -813,11 +766,11 @@ mod tests {
     fn sturdy_step_state_should_reduce_durability_cost_with_waste_not() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
-        assert!(craft_state.play_action(ActionID::WasteNot));
+        assert!(craft_state.play_action(Actions::WasteNot));
 
         craft_state.set_next_step_outcome(0.0, StepState::Sturdy);
 
-        assert!(craft_state.play_action(ActionID::CarefulSynthesis));
+        assert!(craft_state.play_action(Actions::CarefulSynthesis));
 
         assert_eq!(
             craft_state.max_durability as i32 - craft_state.durability,
@@ -844,11 +797,11 @@ mod tests {
 
         let mut craft_state = params.new_craft();
 
-        assert!(craft_state.play_action(ActionID::Veneration));
+        assert!(craft_state.play_action(Actions::Veneration));
 
         craft_state.set_next_step_outcome(0.0, StepState::Malleable);
 
-        assert!(craft_state.play_action(ActionID::RapidSynthesis));
+        assert!(craft_state.play_action(Actions::RapidSynthesis));
 
         assert_eq!(craft_state.progress, 2238);
     }
@@ -869,13 +822,13 @@ mod tests {
             (StepState::Primed, false),
         ];
 
-        assert!(craft_state.play_action(ActionID::MuscleMemory));
+        assert!(craft_state.play_action(Actions::MuscleMemory));
         for (step_state, should_be_valid) in validations {
             craft_state.set_next_step_outcome(0.0, step_state);
 
             let action_mask = craft_state.get_valid_action_mask();
             assert_eq!(
-                action_mask[ActionID::TricksOfTheTrade as usize],
+                action_mask[Actions::TricksOfTheTrade as usize],
                 should_be_valid
             );
         }
@@ -897,15 +850,12 @@ mod tests {
             (StepState::Primed, false),
         ];
 
-        assert!(craft_state.play_action(ActionID::MuscleMemory));
+        assert!(craft_state.play_action(Actions::MuscleMemory));
         for (step_state, should_be_valid) in validations {
             craft_state.set_next_step_outcome(0.0, step_state);
 
             let action_mask = craft_state.get_valid_action_mask();
-            assert_eq!(
-                action_mask[ActionID::PreciseTouch as usize],
-                should_be_valid
-            );
+            assert_eq!(action_mask[Actions::PreciseTouch as usize], should_be_valid);
         }
     }
 
@@ -925,14 +875,14 @@ mod tests {
             (StepState::Primed, false),
         ];
 
-        assert!(craft_state.play_action(ActionID::MuscleMemory));
+        assert!(craft_state.play_action(Actions::MuscleMemory));
 
         for (step_state, should_be_valid) in validations {
             craft_state.set_next_step_outcome(0.0, step_state);
 
             let action_mask = craft_state.get_valid_action_mask();
             assert_eq!(
-                action_mask[ActionID::IntensiveSynthesis as usize],
+                action_mask[Actions::IntensiveSynthesis as usize],
                 should_be_valid
             );
         }
@@ -953,11 +903,11 @@ mod tests {
         for (success_rng, should_succeed) in validations {
             let mut craft_state = GENERIC_PARAMS.new_craft();
 
-            assert!(craft_state.play_action(ActionID::MuscleMemory));
+            assert!(craft_state.play_action(Actions::MuscleMemory));
 
             craft_state.set_next_step_outcome(success_rng, StepState::Normal);
 
-            assert!(craft_state.play_action(ActionID::HastyTouch));
+            assert!(craft_state.play_action(Actions::HastyTouch));
 
             assert_eq!(craft_state.quality > 0, should_succeed);
         }
@@ -980,11 +930,11 @@ mod tests {
         for (success_rng, should_succeed) in validations {
             let mut craft_state = GENERIC_PARAMS.new_craft();
 
-            assert!(craft_state.play_action(ActionID::MuscleMemory));
+            assert!(craft_state.play_action(Actions::MuscleMemory));
 
             craft_state.set_next_step_outcome(success_rng, StepState::Centered);
 
-            assert!(craft_state.play_action(ActionID::HastyTouch));
+            assert!(craft_state.play_action(Actions::HastyTouch));
 
             assert_eq!(craft_state.quality > 0, should_succeed);
         }
@@ -1008,9 +958,9 @@ mod tests {
         };
         let mut craft_state = params.new_craft();
 
-        assert!(craft_state.play_action(ActionID::Observe));
+        assert!(craft_state.play_action(Actions::Observe));
         craft_state.set_next_step_outcome(0.0, StepState::Good);
-        assert!(craft_state.play_action(ActionID::BasicTouch));
+        assert!(craft_state.play_action(Actions::BasicTouch));
         assert_eq!(craft_state.quality, 2387);
     }
 
@@ -1033,23 +983,23 @@ mod tests {
         let mut craft_state = params.new_craft();
 
         let actions_to_execute = vec![
-            ActionID::MuscleMemory,
-            ActionID::Veneration,
-            ActionID::Manipulation,
-            ActionID::WasteNotII,
-            ActionID::Groundwork,
-            ActionID::Groundwork,
-            ActionID::BasicTouch,
-            ActionID::StandardTouch,
-            ActionID::AdvancedTouch,
-            ActionID::PreparatoryTouch,
-            ActionID::PreparatoryTouch,
-            ActionID::Innovation,
-            ActionID::PreparatoryTouch,
-            ActionID::PreparatoryTouch,
-            ActionID::GreatStrides,
-            ActionID::ByregotsBlessing,
-            ActionID::BasicSynthesis,
+            Actions::MuscleMemory,
+            Actions::Veneration,
+            Actions::Manipulation,
+            Actions::WasteNotII,
+            Actions::Groundwork,
+            Actions::Groundwork,
+            Actions::BasicTouch,
+            Actions::StandardTouch,
+            Actions::AdvancedTouch,
+            Actions::PreparatoryTouch,
+            Actions::PreparatoryTouch,
+            Actions::Innovation,
+            Actions::PreparatoryTouch,
+            Actions::PreparatoryTouch,
+            Actions::GreatStrides,
+            Actions::ByregotsBlessing,
+            Actions::BasicSynthesis,
         ];
 
         for a in actions_to_execute {
@@ -1081,33 +1031,33 @@ mod tests {
         let mut craft_state = params.new_craft();
         // Action, Current State, Fail step?
         let actions_to_execute = vec![
-            (ActionID::MuscleMemory, StepState::Normal, false),
-            (ActionID::RapidSynthesis, StepState::Sturdy, true),
-            (ActionID::Manipulation, StepState::Pliant, false),
-            (ActionID::RapidSynthesis, StepState::Pliant, false),
-            (ActionID::HastyTouch, StepState::Sturdy, false),
-            (ActionID::Veneration, StepState::Normal, false),
-            (ActionID::RapidSynthesis, StepState::Normal, false),
-            (ActionID::Innovation, StepState::Pliant, false),
-            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
-            (ActionID::PrudentTouch, StepState::Normal, false),
-            (ActionID::Manipulation, StepState::Pliant, false),
-            (ActionID::PrudentTouch, StepState::Normal, false),
-            (ActionID::Innovation, StepState::Pliant, false),
-            (ActionID::PreparatoryTouch, StepState::Good, false),
-            (ActionID::HastyTouch, StepState::Centered, false),
-            (ActionID::HastyTouch, StepState::Centered, false),
-            (ActionID::HastyTouch, StepState::Centered, false),
-            (ActionID::MastersMend, StepState::Centered, false),
-            (ActionID::GreatStrides, StepState::Normal, false),
-            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
-            (ActionID::GreatStrides, StepState::Sturdy, false),
-            (ActionID::Innovation, StepState::Normal, false),
-            (ActionID::PreparatoryTouch, StepState::Centered, false),
-            (ActionID::GreatStrides, StepState::Normal, false),
-            (ActionID::ByregotsBlessing, StepState::Good, false),
-            (ActionID::PrudentTouch, StepState::Good, false),
-            (ActionID::CarefulSynthesis, StepState::Normal, false),
+            (Actions::MuscleMemory, StepState::Normal, false),
+            (Actions::RapidSynthesis, StepState::Sturdy, true),
+            (Actions::Manipulation, StepState::Pliant, false),
+            (Actions::RapidSynthesis, StepState::Pliant, false),
+            (Actions::HastyTouch, StepState::Sturdy, false),
+            (Actions::Veneration, StepState::Normal, false),
+            (Actions::RapidSynthesis, StepState::Normal, false),
+            (Actions::Innovation, StepState::Pliant, false),
+            (Actions::PreparatoryTouch, StepState::Sturdy, false),
+            (Actions::PrudentTouch, StepState::Normal, false),
+            (Actions::Manipulation, StepState::Pliant, false),
+            (Actions::PrudentTouch, StepState::Normal, false),
+            (Actions::Innovation, StepState::Pliant, false),
+            (Actions::PreparatoryTouch, StepState::Good, false),
+            (Actions::HastyTouch, StepState::Centered, false),
+            (Actions::HastyTouch, StepState::Centered, false),
+            (Actions::HastyTouch, StepState::Centered, false),
+            (Actions::MastersMend, StepState::Centered, false),
+            (Actions::GreatStrides, StepState::Normal, false),
+            (Actions::PreparatoryTouch, StepState::Sturdy, false),
+            (Actions::GreatStrides, StepState::Sturdy, false),
+            (Actions::Innovation, StepState::Normal, false),
+            (Actions::PreparatoryTouch, StepState::Centered, false),
+            (Actions::GreatStrides, StepState::Normal, false),
+            (Actions::ByregotsBlessing, StepState::Good, false),
+            (Actions::PrudentTouch, StepState::Good, false),
+            (Actions::CarefulSynthesis, StepState::Normal, false),
         ];
 
         for (a, next_state, next_rng) in actions_to_execute {
@@ -1144,29 +1094,29 @@ mod tests {
         let mut craft_state = params.new_craft();
         // Action, Current State, Fail step?
         let actions_to_execute = vec![
-            (ActionID::MuscleMemory, StepState::Normal, false),
-            (ActionID::RapidSynthesis, StepState::Sturdy, false),
-            (ActionID::PreciseTouch, StepState::Good, false),
-            (ActionID::Manipulation, StepState::Pliant, false),
-            (ActionID::RapidSynthesis, StepState::Malleable, false),
-            (ActionID::MastersMend, StepState::Pliant, false),
-            (ActionID::PreparatoryTouch, StepState::Pliant, false),
-            (ActionID::PreciseTouch, StepState::Good, false),
-            (ActionID::Innovation, StepState::Sturdy, false),
-            (ActionID::PreparatoryTouch, StepState::Primed, false),
-            (ActionID::PrudentTouch, StepState::Malleable, false),
-            (ActionID::PrudentTouch, StepState::Normal, false),
-            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
-            (ActionID::MastersMend, StepState::Pliant, false),
-            (ActionID::Innovation, StepState::Malleable, false),
-            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
-            (ActionID::AdvancedTouch, StepState::Malleable, false),
-            (ActionID::TrainedFinesse, StepState::Normal, false),
-            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
-            (ActionID::GreatStrides, StepState::Normal, false),
-            (ActionID::Innovation, StepState::Normal, false),
-            (ActionID::ByregotsBlessing, StepState::Sturdy, false),
-            (ActionID::CarefulSynthesis, StepState::Sturdy, false),
+            (Actions::MuscleMemory, StepState::Normal, false),
+            (Actions::RapidSynthesis, StepState::Sturdy, false),
+            (Actions::PreciseTouch, StepState::Good, false),
+            (Actions::Manipulation, StepState::Pliant, false),
+            (Actions::RapidSynthesis, StepState::Malleable, false),
+            (Actions::MastersMend, StepState::Pliant, false),
+            (Actions::PreparatoryTouch, StepState::Pliant, false),
+            (Actions::PreciseTouch, StepState::Good, false),
+            (Actions::Innovation, StepState::Sturdy, false),
+            (Actions::PreparatoryTouch, StepState::Primed, false),
+            (Actions::PrudentTouch, StepState::Malleable, false),
+            (Actions::PrudentTouch, StepState::Normal, false),
+            (Actions::PreparatoryTouch, StepState::Sturdy, false),
+            (Actions::MastersMend, StepState::Pliant, false),
+            (Actions::Innovation, StepState::Malleable, false),
+            (Actions::PreparatoryTouch, StepState::Sturdy, false),
+            (Actions::AdvancedTouch, StepState::Malleable, false),
+            (Actions::TrainedFinesse, StepState::Normal, false),
+            (Actions::PreparatoryTouch, StepState::Sturdy, false),
+            (Actions::GreatStrides, StepState::Normal, false),
+            (Actions::Innovation, StepState::Normal, false),
+            (Actions::ByregotsBlessing, StepState::Sturdy, false),
+            (Actions::CarefulSynthesis, StepState::Sturdy, false),
         ];
 
         for (a, next_state, next_rng) in actions_to_execute {
@@ -1203,34 +1153,34 @@ mod tests {
         let mut craft_state = params.new_craft();
         // Action, Current State, Fail step?
         let actions_to_execute = vec![
-            (ActionID::MuscleMemory, StepState::Normal, false),
-            (ActionID::RapidSynthesis, StepState::Sturdy, false),
-            (ActionID::PrudentTouch, StepState::Malleable, false),
-            (ActionID::RapidSynthesis, StepState::Normal, true),
-            (ActionID::Manipulation, StepState::Pliant, false),
-            (ActionID::RapidSynthesis, StepState::Sturdy, true),
-            (ActionID::RapidSynthesis, StepState::Sturdy, false),
-            (ActionID::PreciseTouch, StepState::Good, false),
-            (ActionID::PreciseTouch, StepState::Good, false),
-            (ActionID::RapidSynthesis, StepState::Normal, false),
-            (ActionID::PreciseTouch, StepState::Good, false),
-            (ActionID::Innovation, StepState::Normal, false),
-            (ActionID::PreciseTouch, StepState::Good, false),
-            (ActionID::MastersMend, StepState::Centered, false),
-            (ActionID::HastyTouch, StepState::Centered, false),
-            (ActionID::PreparatoryTouch, StepState::Sturdy, false),
-            (ActionID::Innovation, StepState::Normal, false),
-            (ActionID::TrainedFinesse, StepState::Normal, false),
-            (ActionID::TrainedFinesse, StepState::Primed, false),
-            (ActionID::TrainedFinesse, StepState::Normal, false),
-            (ActionID::TrainedFinesse, StepState::Normal, false),
-            (ActionID::Innovation, StepState::Centered, false),
-            (ActionID::TrainedFinesse, StepState::Pliant, false),
-            (ActionID::TrainedFinesse, StepState::Normal, false),
-            (ActionID::BasicTouch, StepState::Sturdy, false),
-            (ActionID::GreatStrides, StepState::Primed, false),
-            (ActionID::ByregotsBlessing, StepState::Good, false),
-            (ActionID::CarefulSynthesis, StepState::Centered, false),
+            (Actions::MuscleMemory, StepState::Normal, false),
+            (Actions::RapidSynthesis, StepState::Sturdy, false),
+            (Actions::PrudentTouch, StepState::Malleable, false),
+            (Actions::RapidSynthesis, StepState::Normal, true),
+            (Actions::Manipulation, StepState::Pliant, false),
+            (Actions::RapidSynthesis, StepState::Sturdy, true),
+            (Actions::RapidSynthesis, StepState::Sturdy, false),
+            (Actions::PreciseTouch, StepState::Good, false),
+            (Actions::PreciseTouch, StepState::Good, false),
+            (Actions::RapidSynthesis, StepState::Normal, false),
+            (Actions::PreciseTouch, StepState::Good, false),
+            (Actions::Innovation, StepState::Normal, false),
+            (Actions::PreciseTouch, StepState::Good, false),
+            (Actions::MastersMend, StepState::Centered, false),
+            (Actions::HastyTouch, StepState::Centered, false),
+            (Actions::PreparatoryTouch, StepState::Sturdy, false),
+            (Actions::Innovation, StepState::Normal, false),
+            (Actions::TrainedFinesse, StepState::Normal, false),
+            (Actions::TrainedFinesse, StepState::Primed, false),
+            (Actions::TrainedFinesse, StepState::Normal, false),
+            (Actions::TrainedFinesse, StepState::Normal, false),
+            (Actions::Innovation, StepState::Centered, false),
+            (Actions::TrainedFinesse, StepState::Pliant, false),
+            (Actions::TrainedFinesse, StepState::Normal, false),
+            (Actions::BasicTouch, StepState::Sturdy, false),
+            (Actions::GreatStrides, StepState::Primed, false),
+            (Actions::ByregotsBlessing, StepState::Good, false),
+            (Actions::CarefulSynthesis, StepState::Centered, false),
         ];
 
         for (a, next_state, next_rng) in actions_to_execute {

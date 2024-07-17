@@ -1,7 +1,7 @@
 use super::state;
-use std::{cmp, ops::Index};
+use std::cmp;
 
-use strum::{AsRefStr, EnumCount, EnumString, FromRepr};
+use strum::{AsRefStr, EnumCount, EnumString, FromRepr, VariantArray};
 
 pub(super) trait Change {
     fn execute(&self, state: &mut state::CraftState);
@@ -430,229 +430,10 @@ impl Change for TrainedPerfection {
     }
 }
 
-const BASIC_SYNTHESIS: Action =
-    change_set!(CPCost(0), IncreaseProgress(120), DurabilityCost(10), Step);
-
-const BASIC_TOUCH: Action = change_set!(
-    CPCost(18),
-    IncreaseQuality(100),
-    IncreaseInnerQuiet(1),
-    DurabilityCost(10),
-    Step,
-    BasicTouchCombo
-);
-
-const MASTERS_MEND: Action = change_set!(CPCost(88), IncreaseDurability(30), Step);
-
-const HASTY_TOUCH: Action = change_set!(
-    CPCost(0),
-    ConditionalIncreaseQuality(100, 0.6),
-    ConditionalIncreaseInnerQuiet(1, 0.6),
-    DurabilityCost(10),
-    Step,
-    Expedience
-);
-
-const RAPID_SYNTHESIS: Action = change_set!(
-    CPCost(0),
-    ConditionalIncreaseProgress(500, 0.5),
-    DurabilityCost(10),
-    Step
-);
-
-const OBSERVE: Action = change_set!(CPCost(7), Step, Observe);
-
-const TRICKS_OF_THE_TRADE: Action = change_set!(GoodOrExcellentRequirement, TricksOfTheTrade, Step);
-
-const WASTE_NOT: Action = change_set!(CPCost(56), Step, WasteNot);
-
-const VENERATION: Action = change_set!(CPCost(18), Step, Veneration);
-
-const STANDARD_TOUCH: Action = change_set!(
-    StandardTouchCPCost,
-    IncreaseQuality(125),
-    IncreaseInnerQuiet(1),
-    DurabilityCost(10),
-    Step,
-    StandardTouchCombo
-);
-
-const GREAT_STRIDES: Action = change_set!(CPCost(32), Step, GreatStrides);
-
-const INNOVATION: Action = change_set!(CPCost(18), Step, Innovation);
-
-const FINAL_APPRAISAL: Action = change_set!(CPCost(1), FinalAppraisal);
-
-const WASTE_NOT_II: Action = change_set!(CPCost(98), Step, WasteNotII);
-
-const BYREGOTS_BLESSING: Action =
-    change_set!(CPCost(24), ByregotsBlessing, DurabilityCost(10), Step);
-
-const PRECISE_TOUCH: Action = change_set!(
-    CPCost(18),
-    GoodOrExcellentRequirement,
-    IncreaseQuality(150),
-    IncreaseInnerQuiet(2),
-    DurabilityCost(10),
-    Step
-);
-
-const MUSCLE_MEMORY: Action = change_set!(
-    CPCost(6),
-    IncreaseProgress(300),
-    DurabilityCost(10),
-    MuscleMemory
-);
-
-const CAREFUL_SYNTHESIS: Action =
-    change_set!(CPCost(7), IncreaseProgress(180), DurabilityCost(10), Step);
-
-const MANIPULATION: Action = change_set!(CPCost(96), Manipulation);
-
-const PRUDENT_TOUCH: Action = change_set!(
-    CPCost(25),
-    PrudentRequirement,
-    IncreaseQuality(100),
-    IncreaseInnerQuiet(1),
-    DurabilityCost(5),
-    Step
-);
-
-const REFLECT: Action = change_set!(CPCost(6), IncreaseQuality(100), DurabilityCost(10), Reflect);
-
-const PREPARATORY_TOUCH: Action = change_set!(
-    CPCost(40),
-    IncreaseQuality(200),
-    IncreaseInnerQuiet(2),
-    DurabilityCost(20),
-    Step
-);
-
-const GROUNDWORK: Action = change_set!(CPCost(18), Groundwork, DurabilityCost(20), Step);
-
-const DELICATE_SYNTHESIS: Action = change_set!(
-    CPCost(32),
-    IncreaseProgress(100),
-    IncreaseQuality(100),
-    IncreaseInnerQuiet(1),
-    DurabilityCost(10),
-    Step
-);
-
-const INTENSIVE_SYNTHESIS: Action = change_set!(
-    CPCost(6),
-    GoodOrExcellentRequirement,
-    IncreaseProgress(400),
-    DurabilityCost(10),
-    Step
-);
-
-const ADVANCED_TOUCH: Action = change_set!(
-    AdvancedTouchCPCost,
-    IncreaseQuality(150),
-    IncreaseInnerQuiet(1),
-    DurabilityCost(10),
-    Step
-);
-
-const PRUDENT_SYNTHESIS: Action = change_set!(
-    CPCost(18),
-    PrudentRequirement,
-    IncreaseProgress(180),
-    DurabilityCost(5),
-    Step
-);
-
-const TRAINED_FINESSE: Action = change_set!(
-    CPCost(32),
-    TrainedFinesseRequirement,
-    IncreaseQuality(100),
-    DurabilityCost(0),
-    Step
-);
-
-const REFINED_TOUCH: Action = change_set!(
-    CPCost(18),
-    IncreaseQuality(100),
-    RefinedTouchConditionalInnerQuiet,
-    DurabilityCost(10),
-    Step
-);
-
-const DARING_TOUCH: Action = change_set!(
-    CPCost(18),
-    ExpedienceRequirement,
-    ConditionalIncreaseQuality(150, 0.6),
-    ConditionalIncreaseInnerQuiet(1, 0.6),
-    DurabilityCost(10),
-    Step
-);
-
-const IMMACULATE_MEND: Action = change_set!(CPCost(112), IncreaseDurability(80), Step);
-
-const TRAINED_PERFECTION: Action = change_set!(CPCost(0), Step, TrainedPerfection);
-
-pub const NUM_ACTIONS: usize = 32;
-pub(super) type ActionList = [Action; NUM_ACTIONS];
-
-/// Actions with a difference:
-/// No Trained Eye implementation because if you can use Trained Eye then
-/// you don't need a sim.
-pub(super) const ACTIONS: ActionList = [
-    BASIC_SYNTHESIS,
-    BASIC_TOUCH,
-    MASTERS_MEND,
-    HASTY_TOUCH,
-    RAPID_SYNTHESIS,
-    OBSERVE,
-    TRICKS_OF_THE_TRADE,
-    WASTE_NOT,
-    VENERATION,
-    STANDARD_TOUCH,
-    GREAT_STRIDES,
-    INNOVATION,
-    FINAL_APPRAISAL,
-    WASTE_NOT_II,
-    BYREGOTS_BLESSING,
-    PRECISE_TOUCH,
-    MUSCLE_MEMORY,
-    CAREFUL_SYNTHESIS,
-    MANIPULATION,
-    PRUDENT_TOUCH,
-    REFLECT,
-    PREPARATORY_TOUCH,
-    GROUNDWORK,
-    DELICATE_SYNTHESIS,
-    INTENSIVE_SYNTHESIS,
-    ADVANCED_TOUCH,
-    PRUDENT_SYNTHESIS,
-    TRAINED_FINESSE,
-    REFINED_TOUCH,
-    DARING_TOUCH,
-    IMMACULATE_MEND,
-    TRAINED_PERFECTION,
-];
-
-pub(super) fn get_valid_action_mask(craft_state: &state::CraftState) -> [bool; NUM_ACTIONS] {
-    let mut mask: [bool; NUM_ACTIONS] = Default::default();
-
-    let actions1 = &ACTIONS[0..16];
-    let actions2 = &ACTIONS[16..NUM_ACTIONS];
-
-    for (i, action) in actions1.iter().enumerate() {
-        mask[i] = action.validate(craft_state);
-    }
-    for (i, action) in actions2.iter().enumerate() {
-        mask[15 + i] = action.validate(craft_state);
-    }
-    mask
-}
-
-#[derive(Debug, Copy, Clone, FromRepr, AsRefStr, EnumString, EnumCount)]
-#[repr(u8)]
-pub enum ActionID {
+#[derive(Debug, Copy, Clone, FromRepr, AsRefStr, EnumString, EnumCount, VariantArray)]
+pub enum Actions {
     #[strum(serialize = "Basic Synthesis")]
-    BasicSynthesis = 0,
+    BasicSynthesis,
     #[strum(serialize = "Basic Touch")]
     BasicTouch,
     #[strum(serialize = "Master's Mend")]
@@ -691,10 +472,6 @@ pub enum ActionID {
     Manipulation,
     #[strum(serialize = "Prudent Touch")]
     PrudentTouch,
-    #[strum(serialize = "Focused Synthesis")]
-    FocusedSynthesis,
-    #[strum(serialize = "Focused Touch")]
-    FocusedTouch,
     #[strum(serialize = "Reflect")]
     Reflect,
     #[strum(serialize = "Preparatory Touch")]
@@ -711,12 +488,170 @@ pub enum ActionID {
     PrudentSynthesis,
     #[strum(serialize = "Trained Finesse")]
     TrainedFinesse,
+    #[strum(serialize = "Refined Touch")]
+    RefinedTouch,
+    #[strum(serialize = "Daring Touch")]
+    DaringTouch,
+    #[strum(serialize = "Immaculate Mend")]
+    ImmaculateMend,
+    #[strum(serialize = "Trained Perfection")]
+    TrainedPerfection,
 }
 
-impl Index<ActionID> for ActionList {
-    type Output = Action;
+impl Actions {
+    pub(super) const fn get(&self) -> Action {
+        match *self {
+            Self::BasicSynthesis => {
+                change_set!(CPCost(0), IncreaseProgress(120), DurabilityCost(10), Step)
+            }
+            Self::BasicTouch => change_set!(
+                CPCost(18),
+                IncreaseQuality(100),
+                IncreaseInnerQuiet(1),
+                DurabilityCost(10),
+                Step,
+                BasicTouchCombo
+            ),
+            Self::MastersMend => change_set!(CPCost(88), IncreaseDurability(30), Step),
+            Self::HastyTouch => change_set!(
+                CPCost(0),
+                ConditionalIncreaseQuality(100, 0.6),
+                ConditionalIncreaseInnerQuiet(1, 0.6),
+                DurabilityCost(10),
+                Step,
+                Expedience
+            ),
+            Self::RapidSynthesis => change_set!(
+                CPCost(0),
+                ConditionalIncreaseProgress(500, 0.5),
+                DurabilityCost(10),
+                Step
+            ),
+            Self::Observe => change_set!(CPCost(7), Step, Observe),
+            Self::TricksOfTheTrade => {
+                change_set!(GoodOrExcellentRequirement, TricksOfTheTrade, Step)
+            }
+            Self::WasteNot => change_set!(CPCost(56), Step, WasteNot),
+            Self::Veneration => change_set!(CPCost(18), Step, Veneration),
+            Self::StandardTouch => change_set!(
+                StandardTouchCPCost,
+                IncreaseQuality(125),
+                IncreaseInnerQuiet(1),
+                DurabilityCost(10),
+                Step,
+                StandardTouchCombo
+            ),
+            Self::GreatStrides => change_set!(CPCost(32), Step, GreatStrides),
+            Self::Innovation => change_set!(CPCost(18), Step, Innovation),
+            Self::FinalAppraisal => change_set!(CPCost(1), FinalAppraisal),
+            Self::WasteNotII => change_set!(CPCost(98), Step, WasteNotII),
+            Self::ByregotsBlessing => {
+                change_set!(CPCost(24), ByregotsBlessing, DurabilityCost(10), Step)
+            }
+            Self::PreciseTouch => change_set!(
+                CPCost(18),
+                GoodOrExcellentRequirement,
+                IncreaseQuality(150),
+                IncreaseInnerQuiet(2),
+                DurabilityCost(10),
+                Step
+            ),
+            Self::MuscleMemory => change_set!(
+                CPCost(6),
+                IncreaseProgress(300),
+                DurabilityCost(10),
+                MuscleMemory
+            ),
+            Self::CarefulSynthesis => {
+                change_set!(CPCost(7), IncreaseProgress(180), DurabilityCost(10), Step)
+            }
+            Self::Manipulation => change_set!(CPCost(96), Manipulation),
+            Self::PrudentTouch => change_set!(
+                CPCost(25),
+                PrudentRequirement,
+                IncreaseQuality(100),
+                IncreaseInnerQuiet(1),
+                DurabilityCost(5),
+                Step
+            ),
+            Self::Reflect => {
+                change_set!(CPCost(6), IncreaseQuality(100), DurabilityCost(10), Reflect)
+            }
+            Self::PreparatoryTouch => change_set!(
+                CPCost(40),
+                IncreaseQuality(200),
+                IncreaseInnerQuiet(2),
+                DurabilityCost(20),
+                Step
+            ),
+            Self::Groundwork => change_set!(CPCost(18), Groundwork, DurabilityCost(20), Step),
+            Self::DelicateSynthesis => change_set!(
+                CPCost(32),
+                IncreaseProgress(100),
+                IncreaseQuality(100),
+                IncreaseInnerQuiet(1),
+                DurabilityCost(10),
+                Step
+            ),
+            Self::IntensiveSynthesis => change_set!(
+                CPCost(6),
+                GoodOrExcellentRequirement,
+                IncreaseProgress(400),
+                DurabilityCost(10),
+                Step
+            ),
+            Self::AdvancedTouch => change_set!(
+                AdvancedTouchCPCost,
+                IncreaseQuality(150),
+                IncreaseInnerQuiet(1),
+                DurabilityCost(10),
+                Step
+            ),
+            Self::PrudentSynthesis => change_set!(
+                CPCost(18),
+                PrudentRequirement,
+                IncreaseProgress(180),
+                DurabilityCost(5),
+                Step
+            ),
+            Self::TrainedFinesse => change_set!(
+                CPCost(32),
+                TrainedFinesseRequirement,
+                IncreaseQuality(100),
+                DurabilityCost(0),
+                Step
+            ),
+            Self::RefinedTouch => change_set!(
+                CPCost(18),
+                IncreaseQuality(100),
+                RefinedTouchConditionalInnerQuiet,
+                DurabilityCost(10),
+                Step
+            ),
+            Self::DaringTouch => change_set!(
+                CPCost(18),
+                ExpedienceRequirement,
+                ConditionalIncreaseQuality(150, 0.6),
+                ConditionalIncreaseInnerQuiet(1, 0.6),
+                DurabilityCost(10),
+                Step
+            ),
+            Self::ImmaculateMend => change_set!(CPCost(112), IncreaseDurability(80), Step),
+            Self::TrainedPerfection => change_set!(CPCost(0), Step, TrainedPerfection),
+        }
+    }
 
-    fn index(&self, action_id: ActionID) -> &Self::Output {
-        &self[action_id as usize]
+    pub(super) fn valid_action_mask(craft_state: &state::CraftState) -> [bool; Self::COUNT] {
+        let mut mask: [bool; Self::COUNT] = Default::default();
+        let actions1 = &Self::VARIANTS[0..16];
+        let actions2 = &Self::VARIANTS[16..];
+
+        for (i, action) in actions1.iter().enumerate() {
+            mask[i] = action.get().validate(craft_state);
+        }
+        for (i, action) in actions2.iter().enumerate() {
+            mask[15 + i] = action.get().validate(craft_state);
+        }
+        mask
     }
 }
