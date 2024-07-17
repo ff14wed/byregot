@@ -1,5 +1,7 @@
 use super::state;
-use std::cmp;
+use std::{cmp, ops::Index};
+
+use strum::{AsRefStr, EnumCount, EnumString, FromRepr};
 
 pub(super) trait Change {
     fn execute(&self, state: &mut state::CraftState);
@@ -644,4 +646,77 @@ pub(super) fn get_valid_action_mask(craft_state: &state::CraftState) -> [bool; N
         mask[15 + i] = action.validate(craft_state);
     }
     mask
+}
+
+#[derive(Debug, Copy, Clone, FromRepr, AsRefStr, EnumString, EnumCount)]
+#[repr(u8)]
+pub enum ActionID {
+    #[strum(serialize = "Basic Synthesis")]
+    BasicSynthesis = 0,
+    #[strum(serialize = "Basic Touch")]
+    BasicTouch,
+    #[strum(serialize = "Master's Mend")]
+    MastersMend,
+    #[strum(serialize = "Hasty Touch")]
+    HastyTouch,
+    #[strum(serialize = "Rapid Synthesis")]
+    RapidSynthesis,
+    #[strum(serialize = "Observe")]
+    Observe,
+    #[strum(serialize = "Tricks of the Trade")]
+    TricksOfTheTrade,
+    #[strum(serialize = "Waste Not")]
+    WasteNot,
+    #[strum(serialize = "Veneration")]
+    Veneration,
+    #[strum(serialize = "Standard Touch")]
+    StandardTouch,
+    #[strum(serialize = "Great Strides")]
+    GreatStrides,
+    #[strum(serialize = "Innovation")]
+    Innovation,
+    #[strum(serialize = "Final Appraisal")]
+    FinalAppraisal,
+    #[strum(serialize = "Waste Not II")]
+    WasteNotII,
+    #[strum(serialize = "Byregot's Blessing")]
+    ByregotsBlessing,
+    #[strum(serialize = "Precise Touch")]
+    PreciseTouch,
+    #[strum(serialize = "Muscle Memory")]
+    MuscleMemory,
+    #[strum(serialize = "Careful Synthesis")]
+    CarefulSynthesis,
+    #[strum(serialize = "Manipulation")]
+    Manipulation,
+    #[strum(serialize = "Prudent Touch")]
+    PrudentTouch,
+    #[strum(serialize = "Focused Synthesis")]
+    FocusedSynthesis,
+    #[strum(serialize = "Focused Touch")]
+    FocusedTouch,
+    #[strum(serialize = "Reflect")]
+    Reflect,
+    #[strum(serialize = "Preparatory Touch")]
+    PreparatoryTouch,
+    #[strum(serialize = "Groundwork")]
+    Groundwork,
+    #[strum(serialize = "Delicate Synthesis")]
+    DelicateSynthesis,
+    #[strum(serialize = "Intensive Synthesis")]
+    IntensiveSynthesis,
+    #[strum(serialize = "Advanced Touch")]
+    AdvancedTouch,
+    #[strum(serialize = "Prudent Synthesis")]
+    PrudentSynthesis,
+    #[strum(serialize = "Trained Finesse")]
+    TrainedFinesse,
+}
+
+impl Index<ActionID> for ActionList {
+    type Output = Action;
+
+    fn index(&self, action_id: ActionID) -> &Self::Output {
+        &self[action_id as usize]
+    }
 }
