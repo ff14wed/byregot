@@ -88,9 +88,9 @@ impl CraftParams {
 
         let base_value = (self.craftsmanship as f64 * 10.) / modifiers.progress_divider() + 2.;
         if crafter_level <= self.recipe_level {
-            return base_value * modifiers.progress_modifier() * (0.01 as f32 as f64);
+            return base_value * modifiers.progress_modifier() * 0.01_f64;
         }
-        return base_value;
+        base_value
     }
 
     fn get_base_quality(&self) -> f64 {
@@ -100,9 +100,9 @@ impl CraftParams {
 
         let base_value = (self.control as f64 * 10.) / modifiers.quality_divider() + 35.;
         if crafter_level <= self.recipe_level {
-            return base_value * modifiers.quality_modifier() * (0.01 as f32 as f64);
+            return base_value * modifiers.quality_modifier() * 0.01_f64;
         }
-        return base_value;
+        base_value
     }
 }
 
@@ -331,7 +331,7 @@ impl CraftState {
                 0.0
             }
         };
-        return self.next_success_rng < (threshold + success_boost);
+        self.next_success_rng < (threshold + success_boost)
     }
 
     pub(super) fn get_durability_cost(&self, base_cost: u32) -> u32 {
@@ -352,7 +352,7 @@ impl CraftState {
         if self.step_state == StepState::Pliant {
             return (base_cost as f32 / 2.0).ceil() as u32;
         }
-        return base_cost;
+        base_cost
     }
 
     pub(super) fn get_buff_duration_bonus(&self) -> u8 {
@@ -391,7 +391,7 @@ impl CraftState {
             ACTIONS[action_id].execute(self);
             return true;
         }
-        return false;
+        false
     }
 
     // set_next_state_rng is a helper that randomly chooses a step state for the

@@ -6,9 +6,9 @@ static LEVEL_TABLE: &[u32; 40] = &[
 
 pub(super) fn get_crafter_level(job_level: u32) -> u32 {
     if job_level < 51 {
-        return job_level;
+        job_level
     } else {
-        return LEVEL_TABLE[(job_level - 51) as usize];
+        LEVEL_TABLE[(job_level - 51) as usize]
     }
 }
 

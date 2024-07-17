@@ -638,10 +638,10 @@ pub(super) fn get_valid_action_mask(craft_state: &state::CraftState) -> [bool; N
     let actions2 = &ACTIONS[16..NUM_ACTIONS];
 
     for (i, action) in actions1.iter().enumerate() {
-        mask[i] = action.validate(&craft_state);
+        mask[i] = action.validate(craft_state);
     }
     for (i, action) in actions2.iter().enumerate() {
-        mask[15 + i] = action.validate(&craft_state);
+        mask[15 + i] = action.validate(craft_state);
     }
     mask
 }

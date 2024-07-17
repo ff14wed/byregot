@@ -297,7 +297,7 @@ mod tests {
         assert!(craft_state.play_action(ActionID::PreparatoryTouch));
         assert_eq!(craft_state.quality, 5349);
 
-        assert_eq!(craft_state.is_finished(), false);
+        assert!(!craft_state.is_finished());
 
         assert_eq!(craft_state.progress, 1288);
         assert_eq!(craft_state.quality, 5349);
@@ -570,7 +570,7 @@ mod tests {
 
         let mut craft_state = params.new_craft();
 
-        let actions_to_execute = vec![
+        let actions_to_execute = [
             ActionID::MuscleMemory,
             ActionID::Veneration,
             ActionID::Groundwork,
@@ -609,7 +609,7 @@ mod tests {
 
         let mut craft_state = params.new_craft();
 
-        let actions_to_execute = vec![
+        let actions_to_execute = [
             ActionID::Innovation,
             ActionID::BasicTouch,
             ActionID::StandardTouch,
@@ -644,7 +644,7 @@ mod tests {
 
         let mut craft_state = params.new_craft();
 
-        let actions_to_execute = vec![
+        let actions_to_execute = [
             ActionID::MuscleMemory,
             ActionID::Manipulation,
             ActionID::Veneration,
@@ -703,7 +703,7 @@ mod tests {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
         assert!(craft_state.play_action(ActionID::GreatStrides));
-        assert_eq!(craft_state.play_action(ActionID::TricksOfTheTrade), false);
+        assert!(!craft_state.play_action(ActionID::TricksOfTheTrade));
 
         assert_eq!(craft_state.buffs.great_strides, 3);
         assert_eq!(craft_state.max_cp - craft_state.cp, 32);
