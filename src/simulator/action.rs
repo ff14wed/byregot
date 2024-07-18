@@ -80,7 +80,7 @@ impl Change for Step {
             state.buffs.final_appraisal -= 1;
         }
         if state.buffs.expedience > 0 {
-            state.buffs.expedience -= 1;
+            state.buffs.expedience = 0;
         }
 
         state.did_observe = false;
@@ -98,6 +98,12 @@ impl Change for Step {
         }
         if state.was_good_omen {
             state.step_state = state::StepState::Good;
+        }
+
+        if state.hasty_touch_success {
+            state.hasty_touch_success = false;
+            // Buff duration bonuses do not apply to Expedience
+            state.buffs.expedience = 1;
         }
     }
 
@@ -403,11 +409,16 @@ impl Change for RefinedTouchConditionalInnerQuiet {
     }
 }
 
-struct Expedience;
-impl Change for Expedience {
+struct HastyTouch(f32);
+impl Change for HastyTouch {
     fn execute(&self, state: &mut state::CraftState) {
-        // Buff duration bonuses do not apply to Expedience
-        state.buffs.expedience = 1;
+        if state.is_step_success(self.0) {
+            state.hasty_touch_success = true;
+        }
+    }
+
+    fn validate(&self, state: &state::CraftState) -> bool {
+        state.buffs.expedience == 0
     }
 }
 
@@ -520,11 +531,11 @@ impl Action {
             Self::MastersMend => change_set!(CPCost(88), IncreaseDurability(30), Step),
             Self::HastyTouch => change_set!(
                 CPCost(0),
+                HastyTouch(0.6),
                 ConditionalIncreaseQuality(100, 0.6),
                 ConditionalIncreaseInnerQuiet(1, 0.6),
                 DurabilityCost(10),
-                Step,
-                Expedience
+                Step
             ),
             Self::RapidSynthesis => change_set!(
                 CPCost(0),
@@ -634,7 +645,7 @@ impl Action {
                 Step
             ),
             Self::DaringTouch => change_set!(
-                CPCost(18),
+                CPCost(0),
                 ExpedienceRequirement,
                 ConditionalIncreaseQuality(150, 0.6),
                 ConditionalIncreaseInnerQuiet(1, 0.6),

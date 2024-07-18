@@ -60,6 +60,7 @@ impl CraftParams {
 
             buffs: Default::default(),
 
+            hasty_touch_success: false,
             did_trained_perfection: false,
 
             did_observe: false,
@@ -124,6 +125,7 @@ pub struct CraftState {
 
     pub buffs: BuffStacks,
 
+    pub hasty_touch_success: bool,
     pub did_trained_perfection: bool,
 
     pub did_observe: bool,

@@ -957,6 +957,32 @@ mod tests {
     }
 
     #[test]
+    fn failed_hasty_touch_should_not_grant_expedience() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+
+        craft_state.set_next_step_outcome(1.0, StepState::Normal);
+        assert!(craft_state.play_action(Action::HastyTouch));
+        assert_eq!(craft_state.buffs.expedience, 0);
+
+        let action_mask = craft_state.get_valid_action_mask();
+        assert!(!action_mask[Action::DaringTouch as usize]);
+        assert!(action_mask[Action::HastyTouch as usize]);
+    }
+
+    #[test]
+    fn successful_hasty_touch_should_upgrade_to_daring_touch() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+
+        craft_state.set_next_step_outcome(0.0, StepState::Normal);
+        assert!(craft_state.play_action(Action::HastyTouch));
+        assert_eq!(craft_state.buffs.expedience, 1);
+
+        let action_mask = craft_state.get_valid_action_mask();
+        assert!(action_mask[Action::DaringTouch as usize]);
+        assert!(!action_mask[Action::HastyTouch as usize]);
+    }
+
+    #[test]
     fn benchmark_rotation() {
         let params = CraftParams {
             job_level: 90,
@@ -1038,7 +1064,7 @@ mod tests {
             (Action::Innovation, StepState::Pliant, false),
             (Action::PreparatoryTouch, StepState::Good, false),
             (Action::HastyTouch, StepState::Centered, false),
-            (Action::HastyTouch, StepState::Centered, false),
+            (Action::DaringTouch, StepState::Centered, false),
             (Action::HastyTouch, StepState::Centered, false),
             (Action::MastersMend, StepState::Centered, false),
             (Action::GreatStrides, StepState::Normal, false),
@@ -1052,17 +1078,22 @@ mod tests {
             (Action::CarefulSynthesis, StepState::Normal, false),
         ];
 
-        for (a, next_state, next_rng) in actions_to_execute {
-            craft_state.set_next_step_outcome(next_rng as u8 as f32, next_state);
+        for (a, next_state, fail_step) in actions_to_execute {
+            craft_state.set_next_step_outcome(fail_step as u8 as f32, next_state);
 
             let action_mask = craft_state.get_valid_action_mask();
-            assert!(action_mask[a as usize]);
+            assert!(
+                action_mask[a as usize],
+                "{} is not a valid action at this step",
+                a.as_ref()
+            );
             craft_state.play_action(a);
         }
 
+        println!("{craft_state:?}");
         assert!(craft_state.is_finished());
         assert_eq!(craft_state.progress, 5150);
-        assert_eq!(craft_state.quality, 19385);
+        assert_eq!(craft_state.quality, 19782);
         assert_eq!(craft_state.durability, -5);
         assert_eq!(craft_state.cp, 15);
     }
@@ -1111,11 +1142,15 @@ mod tests {
             (Action::CarefulSynthesis, StepState::Sturdy, false),
         ];
 
-        for (a, next_state, next_rng) in actions_to_execute {
-            craft_state.set_next_step_outcome(next_rng as u8 as f32, next_state);
+        for (a, next_state, fail_step) in actions_to_execute {
+            craft_state.set_next_step_outcome(fail_step as u8 as f32, next_state);
 
             let action_mask = craft_state.get_valid_action_mask();
-            assert!(action_mask[a as usize]);
+            assert!(
+                action_mask[a as usize],
+                "{} is not a valid action at this step",
+                a.as_ref()
+            );
             craft_state.play_action(a);
         }
 
@@ -1175,11 +1210,15 @@ mod tests {
             (Action::CarefulSynthesis, StepState::Centered, false),
         ];
 
-        for (a, next_state, next_rng) in actions_to_execute {
-            craft_state.set_next_step_outcome(next_rng as u8 as f32, next_state);
+        for (a, next_state, fail_step) in actions_to_execute {
+            craft_state.set_next_step_outcome(fail_step as u8 as f32, next_state);
 
             let action_mask = craft_state.get_valid_action_mask();
-            assert!(action_mask[a as usize]);
+            assert!(
+                action_mask[a as usize],
+                "{} is not a valid action at this step",
+                a.as_ref()
+            );
             craft_state.play_action(a);
         }
 
