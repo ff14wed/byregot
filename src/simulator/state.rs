@@ -370,7 +370,8 @@ impl CraftState {
     }
 
     /// get_valid_action_mask returns a bool mask of valid actions for the next
-    /// step, where "true" means valid.
+    /// step, where "true" means valid and the index is the integer representation
+    /// of the action.
     pub fn get_valid_action_mask(&self) -> [bool; Action::NUM_ACTIONS] {
         Action::valid_action_mask(self)
     }
