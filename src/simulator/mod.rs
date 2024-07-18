@@ -1009,6 +1009,20 @@ mod tests {
     }
 
     #[test]
+    fn immaculate_mend_test() {
+        let validations = vec![75, 30, 5];
+
+        for (starting_durability) in validations {
+            let mut craft_state = GENERIC_PARAMS.new_craft();
+            craft_state.durability = starting_durability;
+
+            assert!(craft_state.play_action(Action::ImmaculateMend));
+
+            assert_eq!(craft_state.durability as u32, craft_state.max_durability);
+        }
+    }
+
+    #[test]
     fn benchmark_rotation() {
         let params = CraftParams {
             job_level: 90,
