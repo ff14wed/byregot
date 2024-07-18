@@ -67,7 +67,7 @@ impl CraftParams {
             basic_touch_combo: 0,
 
             step_state: StepState::Normal,
-            next_success_rng: 0.0,
+            next_failure_prob: 0.0,
 
             was_primed: false,
             was_excellent: false,
@@ -131,7 +131,7 @@ pub struct CraftState {
     pub basic_touch_combo: u8,
 
     pub step_state: StepState,
-    pub next_success_rng: f32,
+    pub next_failure_prob: f32,
 
     pub(super) was_primed: bool,
     pub(super) was_excellent: bool,
@@ -222,18 +222,19 @@ impl CraftState {
         self.quality += quality_increase.floor() as u32;
     }
 
-    /// set_next_state_outcome sets the success and/or StepState of the next step.
-    /// if success_rng is less than the success threshold for the next action,
-    /// step will succeed.
+    /// set_next_state_outcome sets the RNG outcome and/or StepState of the next
+    /// step.  If failure_prob is less than the success threshold for the next
+    /// action, the step will succeed.
+    /// failure_prob == 0.0 will always succeed. failure_prob == 1.0 will always fail.
     /// Each step will automatically reset the next step to be successful with a
     /// NORMAL StepState.
-    pub fn set_next_step_outcome(&mut self, success_rng: f32, state: StepState) {
-        self.next_success_rng = success_rng;
+    pub fn set_next_step_outcome(&mut self, failure_prob: f32, state: StepState) {
+        self.next_failure_prob = failure_prob;
         self.step_state = state;
     }
 
     pub(super) fn reset_rng(&mut self) {
-        self.next_success_rng = 0.0;
+        self.next_failure_prob = 0.0;
         self.step_state = StepState::Normal;
     }
 
@@ -329,7 +330,7 @@ impl CraftState {
                 0.0
             }
         };
-        self.next_success_rng < (threshold + success_boost)
+        self.next_failure_prob < (threshold + success_boost)
     }
 
     pub(super) fn get_durability_cost(&self, base_cost: u32) -> u32 {
