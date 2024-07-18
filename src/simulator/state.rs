@@ -86,7 +86,7 @@ impl CraftParams {
 
         let base_value = (self.craftsmanship as f64 * 10.) / modifiers.progress_divider() + 2.;
         if crafter_level <= self.recipe_level {
-            return base_value * modifiers.progress_modifier() * 0.01_f64;
+            return base_value * modifiers.progress_modifier() * (0.01_f32 as f64);
         }
         base_value
     }
@@ -98,7 +98,7 @@ impl CraftParams {
 
         let base_value = (self.control as f64 * 10.) / modifiers.quality_divider() + 35.;
         if crafter_level <= self.recipe_level {
-            return base_value * modifiers.quality_modifier() * 0.01_f64;
+            return base_value * modifiers.quality_modifier() * (0.01_f32 as f64);
         }
         base_value
     }
