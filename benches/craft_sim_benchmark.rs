@@ -1,26 +1,25 @@
-use byregot::simulator::{Actions, CraftParams, CraftState};
+use byregot::simulator::{Action, CraftParams, CraftState};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use strum::EnumCount;
 
 // Long-winded rotation
-static ACTIONS_TO_EXECUTE: [Actions; 17] = [
-    Actions::MuscleMemory,
-    Actions::Veneration,
-    Actions::Manipulation,
-    Actions::WasteNotII,
-    Actions::Groundwork,
-    Actions::Groundwork,
-    Actions::BasicTouch,
-    Actions::StandardTouch,
-    Actions::AdvancedTouch,
-    Actions::PreparatoryTouch,
-    Actions::PreparatoryTouch,
-    Actions::Innovation,
-    Actions::PreparatoryTouch,
-    Actions::PreparatoryTouch,
-    Actions::GreatStrides,
-    Actions::ByregotsBlessing,
-    Actions::BasicSynthesis,
+static ACTIONS_TO_EXECUTE: [Action; 17] = [
+    Action::MuscleMemory,
+    Action::Veneration,
+    Action::Manipulation,
+    Action::WasteNotII,
+    Action::Groundwork,
+    Action::Groundwork,
+    Action::BasicTouch,
+    Action::StandardTouch,
+    Action::AdvancedTouch,
+    Action::PreparatoryTouch,
+    Action::PreparatoryTouch,
+    Action::Innovation,
+    Action::PreparatoryTouch,
+    Action::PreparatoryTouch,
+    Action::GreatStrides,
+    Action::ByregotsBlessing,
+    Action::BasicSynthesis,
 ];
 
 fn full_craft_no_validate(craft_params: &CraftParams) {
@@ -37,7 +36,7 @@ fn full_craft(craft_params: &CraftParams) {
     }
 }
 
-fn get_valid_actions(craft_state: &CraftState) -> [bool; Actions::COUNT] {
+fn get_valid_actions(craft_state: &CraftState) -> [bool; Action::NUM_ACTIONS] {
     craft_state.get_valid_action_mask()
 }
 
@@ -73,7 +72,7 @@ fn bench_craft(c: &mut Criterion) {
         b.iter(|| get_valid_actions(black_box(&craft_state)))
     });
 
-    craft_state.play_action(Actions::MuscleMemory);
+    craft_state.play_action(Action::MuscleMemory);
 
     c.bench_function("get_valid_actions2", |b| {
         b.iter(|| get_valid_actions(black_box(&craft_state)))

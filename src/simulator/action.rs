@@ -1,6 +1,7 @@
 use super::state;
 use std::cmp;
 
+use seq_macro::seq;
 use strum::{AsRefStr, EnumCount, EnumString, FromRepr, VariantArray};
 
 pub(super) trait Change {
@@ -32,12 +33,12 @@ macro_rules! change_set_internal {
 }
 
 macro_rules! change_set {
-  ( $($x:tt)* ) => { Action(&change_set_internal!($($x)*)) };
+  ( $($x:tt)* ) => { ActionInternal(&change_set_internal!($($x)*)) };
 }
 
-pub struct Action(&'static dyn Change);
+struct ActionInternal(&'static dyn Change);
 
-impl Change for Action {
+impl Change for ActionInternal {
     fn execute(&self, state: &mut state::CraftState) {
         self.0.execute(state);
     }
@@ -431,9 +432,10 @@ impl Change for TrainedPerfection {
 }
 
 #[derive(Debug, Copy, Clone, FromRepr, AsRefStr, EnumString, EnumCount, VariantArray)]
-pub enum Actions {
+#[repr(u8)]
+pub enum Action {
     #[strum(serialize = "Basic Synthesis")]
-    BasicSynthesis,
+    BasicSynthesis = 0,
     #[strum(serialize = "Basic Touch")]
     BasicTouch,
     #[strum(serialize = "Master's Mend")]
@@ -498,8 +500,11 @@ pub enum Actions {
     TrainedPerfection,
 }
 
-impl Actions {
-    pub(super) const fn get(&self) -> Action {
+impl Action {
+    pub const NUM_ACTIONS: usize = Self::COUNT;
+    const ACTIONS_LIST: [ActionInternal; Self::COUNT] = Self::list();
+
+    const fn get(&self) -> ActionInternal {
         match *self {
             Self::BasicSynthesis => {
                 change_set!(CPCost(0), IncreaseProgress(120), DurabilityCost(10), Step)
@@ -641,17 +646,34 @@ impl Actions {
         }
     }
 
-    pub(super) fn valid_action_mask(craft_state: &state::CraftState) -> [bool; Self::COUNT] {
-        let mut mask: [bool; Self::COUNT] = Default::default();
-        let actions1 = &Self::VARIANTS[0..16];
-        let actions2 = &Self::VARIANTS[16..];
+    const fn list() -> [ActionInternal; Self::COUNT] {
+        seq!(N in 0..=31 {
+            [
+                #(
+                    Self::VARIANTS[N].get(),
+                )*
+            ]
+        })
+    }
 
-        for (i, action) in actions1.iter().enumerate() {
-            mask[i] = action.get().validate(craft_state);
-        }
-        for (i, action) in actions2.iter().enumerate() {
-            mask[15 + i] = action.get().validate(craft_state);
-        }
-        mask
+    pub(super) fn valid_action_mask(craft_state: &state::CraftState) -> [bool; Self::COUNT] {
+        seq!(N in 0..=31 {
+            [
+                #(
+                    Self::ACTIONS_LIST[N].validate(craft_state),
+                )*
+            ]
+        })
+    }
+}
+
+impl Change for Action {
+    fn execute(&self, state: &mut state::CraftState) {
+        let idx = *self as usize;
+        Self::ACTIONS_LIST[idx].execute(state);
+    }
+    fn validate(&self, state: &state::CraftState) -> bool {
+        let idx = *self as usize;
+        Self::ACTIONS_LIST[idx].validate(state)
     }
 }

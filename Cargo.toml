@@ -16,6 +16,7 @@ keywords = ["ffxiv", "ff14"]
 rand = "0.8.5"
 rand_distr = "0.4.3"
 strum = { version = "0.26", features = ["derive"] }
+seq-macro = "0.3"
 
 [dev-dependencies]
 criterion = "0.5"
