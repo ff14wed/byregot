@@ -960,6 +960,9 @@ mod tests {
     fn failed_hasty_touch_should_not_grant_expedience() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
+        let action_mask = craft_state.get_valid_action_mask();
+        assert!(!action_mask[Action::DaringTouch as usize]);
+
         craft_state.set_next_step_outcome(1.0, StepState::Normal);
         assert!(craft_state.play_action(Action::HastyTouch));
         assert_eq!(craft_state.buffs.expedience, 0);
@@ -980,6 +983,29 @@ mod tests {
         let action_mask = craft_state.get_valid_action_mask();
         assert!(action_mask[Action::DaringTouch as usize]);
         assert!(!action_mask[Action::HastyTouch as usize]);
+    }
+
+    #[test]
+    fn refined_touch_should_have_inner_quiet_bonus_only_if_combo() {
+        let validations = vec![
+            (vec![Action::RefinedTouch], 1),
+            (vec![Action::BasicTouch, Action::RefinedTouch], 3),
+            (vec![Action::StandardTouch, Action::RefinedTouch], 2),
+            (vec![Action::AdvancedTouch, Action::RefinedTouch], 2),
+        ];
+
+        for (actions, expected_iq_stacks) in validations {
+            let mut craft_state = GENERIC_PARAMS.new_craft();
+            craft_state.set_next_step_outcome(0.0, StepState::Normal);
+
+            for action in &actions {
+                assert!(craft_state.play_action(*action));
+            }
+            assert_eq!(
+                craft_state.buffs.inner_quiet, expected_iq_stacks,
+                "Failed test case {actions:?} -> IQ {expected_iq_stacks}"
+            );
+        }
     }
 
     #[test]
