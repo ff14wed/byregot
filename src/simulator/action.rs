@@ -159,7 +159,7 @@ struct DurabilityCost(u32);
 impl Change for DurabilityCost {
     fn execute(&self, state: &mut state::CraftState) {
         let cost = state.get_durability_cost(self.0) as i32;
-        if state.buffs.trained_perfection > 0 && cost > 0 {
+        if state.buffs.trained_perfection > 0 && self.0 > 0 {
             state.buffs.trained_perfection = 0;
             return;
         }

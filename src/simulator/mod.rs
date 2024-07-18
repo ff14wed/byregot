@@ -996,7 +996,6 @@ mod tests {
 
         for (actions, expected_iq_stacks) in validations {
             let mut craft_state = GENERIC_PARAMS.new_craft();
-            craft_state.set_next_step_outcome(0.0, StepState::Normal);
 
             for action in &actions {
                 assert!(craft_state.play_action(*action));
@@ -1012,7 +1011,7 @@ mod tests {
     fn immaculate_mend_test() {
         let validations = vec![75, 30, 5];
 
-        for (starting_durability) in validations {
+        for starting_durability in validations {
             let mut craft_state = GENERIC_PARAMS.new_craft();
             craft_state.durability = starting_durability;
 
@@ -1020,6 +1019,69 @@ mod tests {
 
             assert_eq!(craft_state.durability as u32, craft_state.max_durability);
         }
+    }
+    #[test]
+    fn trained_perfection_can_only_be_used_once() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+
+        assert!(craft_state.play_action(Action::TrainedPerfection));
+        assert!(craft_state.play_action(Action::BasicTouch));
+        assert!(!craft_state.play_action(Action::TrainedPerfection),);
+
+        assert_eq!(craft_state.buffs.trained_perfection, 0);
+    }
+
+    #[test]
+    fn trained_perfection_should_persist() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+
+        assert!(craft_state.play_action(Action::TrainedPerfection));
+        assert!(craft_state.play_action(Action::Manipulation));
+        assert!(craft_state.play_action(Action::WasteNotII));
+        assert!(craft_state.play_action(Action::Innovation));
+        assert!(craft_state.play_action(Action::Veneration));
+        assert!(craft_state.play_action(Action::MastersMend));
+
+        assert_eq!(craft_state.buffs.trained_perfection, 1);
+    }
+
+    #[test]
+    fn trained_perfection_should_persist_through_trained_finesse() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.buffs.inner_quiet = 10;
+
+        assert!(craft_state.play_action(Action::TrainedPerfection));
+        assert!(craft_state.play_action(Action::TrainedFinesse));
+        assert!(craft_state.play_action(Action::TrainedFinesse));
+        assert!(craft_state.play_action(Action::TrainedFinesse));
+
+        assert_eq!(craft_state.buffs.trained_perfection, 1);
+    }
+
+    #[test]
+    fn trained_perfection_is_consumed_by_prudent_touch() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.buffs.inner_quiet = 10;
+
+        assert!(craft_state.play_action(Action::Manipulation));
+        assert!(craft_state.play_action(Action::TrainedPerfection));
+        assert!(craft_state.play_action(Action::PrudentTouch));
+
+        assert_eq!(craft_state.buffs.trained_perfection, 0);
+    }
+
+    #[test]
+    fn trained_perfection_gives_groundwork_full_efficiency() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.durability = 5;
+        assert!(craft_state.play_action(Action::Groundwork));
+        assert_eq!(craft_state.progress, 414);
+
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.durability = 5;
+        assert!(craft_state.play_action(Action::TrainedPerfection));
+        assert!(craft_state.play_action(Action::Groundwork));
+        assert_eq!(craft_state.progress, 828);
     }
 
     #[test]
