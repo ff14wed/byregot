@@ -126,11 +126,15 @@ impl Change for IncreaseQuality {
     }
 }
 
-struct ConditionalIncreaseProgress(u32, f32);
-impl Change for ConditionalIncreaseProgress {
+struct RapidSynthesis;
+impl Change for RapidSynthesis {
     fn execute(&self, state: &mut state::CraftState) {
-        if state.is_step_success(self.1) {
-            state.increase_progress(self.0, 1.);
+        if state.is_step_success(0.6) {
+            if state.job_level < 63 {
+                state.increase_progress(250, 1.);
+            } else {
+                state.increase_progress(500, 1.);
+            }
         }
     }
 }
@@ -393,10 +397,11 @@ impl Change for Reflect {
 struct Groundwork;
 impl Change for Groundwork {
     fn execute(&self, state: &mut state::CraftState) {
+        let base_potency = if state.job_level < 86 { 150 } else { 180 };
         if state.durability < state.get_durability_cost(20) as i32 {
-            state.increase_progress(180, 1.);
+            state.increase_progress(base_potency, 1.);
         } else {
-            state.increase_progress(360, 1.);
+            state.increase_progress(base_potency * 2, 1.);
         }
     }
 }
@@ -528,9 +533,12 @@ impl Action {
 
     const fn get(&self) -> ActionInternal {
         match *self {
-            Self::BasicSynthesis => {
-                change_set!(CPCost(0), IncreaseProgress(120), DurabilityCost(10), Step)
-            }
+            Self::BasicSynthesis => change_set!(
+                CPCost(0),
+                LevelGatedIncreaseProgress(31, 100, 120),
+                DurabilityCost(10),
+                Step
+            ),
             Self::BasicTouch => change_set!(
                 CPCost(18),
                 IncreaseQuality(100),
@@ -548,12 +556,9 @@ impl Action {
                 DurabilityCost(10),
                 Step
             ),
-            Self::RapidSynthesis => change_set!(
-                CPCost(0),
-                ConditionalIncreaseProgress(500, 0.5),
-                DurabilityCost(10),
-                Step
-            ),
+            Self::RapidSynthesis => {
+                change_set!(CPCost(0), RapidSynthesis, DurabilityCost(10), Step)
+            }
             Self::Observe => change_set!(CPCost(7), Step, Observe),
             Self::TricksOfTheTrade => {
                 change_set!(GoodOrExcellentRequirement, TricksOfTheTrade, Step)
@@ -589,9 +594,12 @@ impl Action {
                 DurabilityCost(10),
                 MuscleMemory
             ),
-            Self::CarefulSynthesis => {
-                change_set!(CPCost(7), IncreaseProgress(180), DurabilityCost(10), Step)
-            }
+            Self::CarefulSynthesis => change_set!(
+                CPCost(7),
+                LevelGatedIncreaseProgress(82, 150, 180),
+                DurabilityCost(10),
+                Step
+            ),
             Self::Manipulation => change_set!(CPCost(96), Manipulation),
             Self::PrudentTouch => change_set!(
                 CPCost(25),

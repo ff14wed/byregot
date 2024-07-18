@@ -1085,6 +1085,75 @@ mod tests {
     }
 
     #[test]
+    fn basic_synthesis_trait_at_level_31() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 30;
+        assert!(craft_state.play_action(Action::BasicSynthesis));
+        assert_eq!(craft_state.progress, 230);
+
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 31;
+        assert!(craft_state.play_action(Action::BasicSynthesis));
+        assert_eq!(craft_state.progress, 276);
+    }
+
+    #[test]
+    fn rapid_synthesis_trait_at_level_63() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 62;
+        craft_state.set_next_step_outcome(0.0, StepState::Normal);
+        assert!(craft_state.play_action(Action::RapidSynthesis));
+        assert_eq!(craft_state.progress, 575);
+
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 63;
+        craft_state.set_next_step_outcome(0.0, StepState::Normal);
+        assert!(craft_state.play_action(Action::RapidSynthesis));
+        assert_eq!(craft_state.progress, 1150);
+    }
+
+    #[test]
+    fn careful_synthesis_trait_at_level_82() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 81;
+        assert!(craft_state.play_action(Action::CarefulSynthesis));
+        assert_eq!(craft_state.progress, 345);
+
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 82;
+        assert!(craft_state.play_action(Action::CarefulSynthesis));
+        assert_eq!(craft_state.progress, 414);
+    }
+
+    #[test]
+    fn groundwork_trait_at_level_86_with_low_dur() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.durability = 5;
+        craft_state.job_level = 85;
+        assert!(craft_state.play_action(Action::Groundwork));
+        assert_eq!(craft_state.progress, 345);
+
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.durability = 5;
+        craft_state.job_level = 86;
+        assert!(craft_state.play_action(Action::Groundwork));
+        assert_eq!(craft_state.progress, 414);
+    }
+
+    #[test]
+    fn groundwork_trait_at_level_86() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 85;
+        assert!(craft_state.play_action(Action::Groundwork));
+        assert_eq!(craft_state.progress, 690);
+
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 86;
+        assert!(craft_state.play_action(Action::Groundwork));
+        assert_eq!(craft_state.progress, 828);
+    }
+
+    #[test]
     fn delicate_synthesis_trait_at_level_94() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
         assert!(craft_state.play_action(Action::DelicateSynthesis));
