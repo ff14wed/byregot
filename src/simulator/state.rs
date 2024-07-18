@@ -70,6 +70,7 @@ impl CraftParams {
             step_state: StepState::Normal,
             next_failure_prob: 0.0,
 
+            job_level: self.job_level,
             was_primed: false,
             was_excellent: false,
             was_good_omen: false,
@@ -135,6 +136,7 @@ pub struct CraftState {
     pub step_state: StepState,
     pub next_failure_prob: f32,
 
+    pub(super) job_level: u32,
     pub(super) was_primed: bool,
     pub(super) was_excellent: bool,
     pub(super) was_good_omen: bool,

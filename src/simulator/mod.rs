@@ -1085,6 +1085,20 @@ mod tests {
     }
 
     #[test]
+    fn delicate_synthesis_trait_at_level_94() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        assert!(craft_state.play_action(Action::DelicateSynthesis));
+        assert_eq!(craft_state.progress, 230);
+        assert_eq!(craft_state.quality, 299);
+
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 94;
+        assert!(craft_state.play_action(Action::DelicateSynthesis));
+        assert_eq!(craft_state.progress, 345);
+        assert_eq!(craft_state.quality, 299);
+    }
+
+    #[test]
     fn benchmark_rotation() {
         let params = CraftParams {
             job_level: 90,

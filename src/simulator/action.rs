@@ -144,6 +144,17 @@ impl Change for ConditionalIncreaseQuality {
     }
 }
 
+struct LevelGatedIncreaseProgress(u8, u32, u32);
+impl Change for LevelGatedIncreaseProgress {
+    fn execute(&self, state: &mut state::CraftState) {
+        if state.job_level < self.0 as u32 {
+            state.increase_progress(self.1, 1.);
+        } else {
+            state.increase_progress(self.2, 1.);
+        }
+    }
+}
+
 struct CPCost(u32);
 impl Change for CPCost {
     fn execute(&self, state: &mut state::CraftState) {
@@ -603,7 +614,7 @@ impl Action {
             Self::Groundwork => change_set!(CPCost(18), Groundwork, DurabilityCost(20), Step),
             Self::DelicateSynthesis => change_set!(
                 CPCost(32),
-                IncreaseProgress(100),
+                LevelGatedIncreaseProgress(94, 100, 150),
                 IncreaseQuality(100),
                 IncreaseInnerQuiet(1),
                 DurabilityCost(10),
