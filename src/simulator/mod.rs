@@ -1059,6 +1059,7 @@ mod tests {
     #[test]
     fn failed_hasty_touch_should_not_grant_expedience() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 96;
 
         let action_mask = craft_state.get_valid_action_mask();
         assert!(!action_mask[Action::DaringTouch as usize]);
@@ -1073,8 +1074,23 @@ mod tests {
     }
 
     #[test]
+    fn hasty_touch_should_not_give_expedience_until_level_96() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 95;
+
+        craft_state.set_next_step_outcome(0.0, StepState::Normal);
+        assert!(craft_state.play_action(Action::HastyTouch));
+        assert_eq!(craft_state.buffs.expedience, 0);
+
+        let action_mask = craft_state.get_valid_action_mask();
+        assert!(!action_mask[Action::DaringTouch as usize]);
+        assert!(action_mask[Action::HastyTouch as usize]);
+    }
+
+    #[test]
     fn successful_hasty_touch_should_upgrade_to_daring_touch() {
         let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 96;
 
         craft_state.set_next_step_outcome(0.0, StepState::Normal);
         assert!(craft_state.play_action(Action::HastyTouch));
@@ -1401,7 +1417,7 @@ mod tests {
             (Action::Innovation, StepState::Pliant, false),
             (Action::PreparatoryTouch, StepState::Good, false),
             (Action::HastyTouch, StepState::Centered, false),
-            (Action::DaringTouch, StepState::Centered, false),
+            (Action::HastyTouch, StepState::Centered, false),
             (Action::HastyTouch, StepState::Centered, false),
             (Action::MastersMend, StepState::Centered, false),
             (Action::GreatStrides, StepState::Normal, false),
@@ -1430,7 +1446,7 @@ mod tests {
         println!("{craft_state:?}");
         assert!(craft_state.is_finished());
         assert_eq!(craft_state.progress, 5150);
-        assert_eq!(craft_state.quality, 19782);
+        assert_eq!(craft_state.quality, 19385);
         assert_eq!(craft_state.durability, -5);
         assert_eq!(craft_state.cp, 15);
     }

@@ -60,9 +60,6 @@ impl CraftParams {
 
             buffs: Default::default(),
 
-            hasty_touch_success: false,
-            did_trained_perfection: false,
-
             did_observe: false,
             prev_basic_touch_combo: 0,
             basic_touch_combo: 0,
@@ -71,6 +68,9 @@ impl CraftParams {
             next_failure_prob: 0.0,
 
             job_level: self.job_level,
+            give_expedience: false,
+            did_trained_perfection: false,
+
             was_primed: false,
             was_excellent: false,
             was_good_omen: false,
@@ -126,17 +126,17 @@ pub struct CraftState {
 
     pub buffs: BuffStacks,
 
-    pub hasty_touch_success: bool,
-    pub did_trained_perfection: bool,
-
     pub did_observe: bool,
-    pub prev_basic_touch_combo: u8,
+    pub(super) prev_basic_touch_combo: u8,
     pub basic_touch_combo: u8,
 
     pub step_state: StepState,
     pub next_failure_prob: f32,
 
     pub(super) job_level: u32,
+    pub(super) give_expedience: bool,
+    pub(super) did_trained_perfection: bool,
+
     pub(super) was_primed: bool,
     pub(super) was_excellent: bool,
     pub(super) was_good_omen: bool,

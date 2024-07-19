@@ -100,8 +100,8 @@ impl Change for Step {
             state.step_state = state::StepState::Good;
         }
 
-        if state.hasty_touch_success {
-            state.hasty_touch_success = false;
+        if state.give_expedience {
+            state.give_expedience = false;
             // Buff duration bonuses do not apply to Expedience
             state.buffs.expedience = 1;
         }
@@ -428,8 +428,8 @@ impl Change for RefinedTouchConditionalInnerQuiet {
 struct HastyTouch(f32);
 impl Change for HastyTouch {
     fn execute(&self, state: &mut state::CraftState) {
-        if state.is_step_success(self.0) {
-            state.hasty_touch_success = true;
+        if state.is_step_success(self.0) && state.job_level >= 96 {
+            state.give_expedience = true;
         }
     }
 
