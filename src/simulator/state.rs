@@ -307,7 +307,7 @@ impl CraftState {
                 ],
                 &[0.22, 0.12, 0.15, 0.15, 0.12, 0.12, 0.12],
             ),
-            641 => (
+            641 | 643 => (
                 &[
                     StepState::Normal,
                     StepState::Good,
@@ -318,6 +318,30 @@ impl CraftState {
                     StepState::GoodOmen,
                 ],
                 &[0.33, 0.04, 0.15, 0.10, 0.115, 0.145, 0.12],
+            ),
+            642 => (
+                &[
+                    StepState::Normal,
+                    StepState::Good,
+                    StepState::Centered,
+                    StepState::Sturdy,
+                    StepState::Pliant,
+                    StepState::GoodOmen,
+                ],
+                &[0.42, 0.04, 0.15, 0.15, 0.12, 0.12],
+            ),
+            644 => (
+                &[
+                    StepState::Normal,
+                    StepState::Good,
+                    StepState::Centered,
+                    StepState::Sturdy,
+                    StepState::Pliant,
+                    StepState::Malleable,
+                    StepState::Primed,
+                    StepState::GoodOmen,
+                ],
+                &[0.205, 0.04, 0.15, 0.15, 0.10, 0.115, 0.12, 0.12],
             ),
             _ => (
                 &[StepState::Normal, StepState::Good, StepState::Excellent],
