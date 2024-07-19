@@ -610,7 +610,7 @@ impl Action {
                 Step
             ),
             Self::Reflect => {
-                change_set!(CPCost(6), IncreaseQuality(100), DurabilityCost(10), Reflect)
+                change_set!(CPCost(6), IncreaseQuality(300), DurabilityCost(10), Reflect)
             }
             Self::PreparatoryTouch => change_set!(
                 CPCost(40),

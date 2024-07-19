@@ -67,7 +67,7 @@ mod tests {
 
         assert!(craft_state.is_finished());
         assert_eq!(craft_state.progress, 822);
-        assert_eq!(craft_state.quality, 1797);
+        assert_eq!(craft_state.quality, 3431);
         assert_eq!(craft_state.durability, 50);
         assert_eq!(craft_state.buffs.inner_quiet, 3);
         assert_eq!(craft_state.cp, 501);
@@ -93,19 +93,19 @@ mod tests {
         let mut craft_state = params.new_craft();
 
         assert!(craft_state.play_action(Action::Reflect));
-        assert_eq!(craft_state.quality, 817);
+        assert_eq!(craft_state.quality, 2451);
 
         assert!(craft_state.play_action(Action::BasicTouch));
-        assert_eq!(craft_state.quality, 1797);
+        assert_eq!(craft_state.quality, 3431);
 
         assert!(craft_state.play_action(Action::ByregotsBlessing));
-        assert_eq!(craft_state.quality, 3496);
+        assert_eq!(craft_state.quality, 5130);
 
         assert!(craft_state.play_action(Action::CarefulSynthesis));
 
         assert!(craft_state.is_finished());
         assert_eq!(craft_state.progress, 822);
-        assert_eq!(craft_state.quality, 3496);
+        assert_eq!(craft_state.quality, 5130);
         assert_eq!(craft_state.durability, 40);
         assert_eq!(craft_state.buffs.inner_quiet, 0);
         assert_eq!(craft_state.cp, 477);
@@ -131,13 +131,13 @@ mod tests {
         let mut craft_state = params.new_craft();
 
         assert!(craft_state.play_action(Action::Reflect));
-        assert_eq!(craft_state.quality, 817);
+        assert_eq!(craft_state.quality, 2451);
 
         assert!(craft_state.play_action(Action::Innovation));
         assert!(craft_state.play_action(Action::GreatStrides));
 
         assert!(craft_state.play_action(Action::BasicTouch));
-        assert_eq!(craft_state.quality, 3268);
+        assert_eq!(craft_state.quality, 4902);
     }
 
     #[test]
@@ -181,7 +181,7 @@ mod tests {
 
         assert!(craft_state.is_finished());
         assert_eq!(craft_state.progress, 822);
-        assert_eq!(craft_state.quality, 15846);
+        assert_eq!(craft_state.quality, 17480);
         assert_eq!(craft_state.durability, 30);
         assert_eq!(craft_state.buffs.inner_quiet, 0);
         assert_eq!(craft_state.cp, 175);
@@ -192,33 +192,32 @@ mod tests {
         let mut craft_state = GENERIC_PARAMS.new_craft();
 
         assert!(craft_state.play_action(Action::Reflect));
-        assert_eq!(craft_state.quality, 299);
+        assert_eq!(craft_state.quality, 897);
 
         assert!(craft_state.play_action(Action::DelicateSynthesis));
-        assert_eq!(craft_state.quality, 657);
+        assert_eq!(craft_state.quality, 1255);
 
         assert!(craft_state.play_action(Action::DelicateSynthesis));
-        assert_eq!(craft_state.quality, 1045);
+        assert_eq!(craft_state.quality, 1643);
 
         assert!(craft_state.play_action(Action::WasteNot));
         assert!(craft_state.play_action(Action::Groundwork));
         assert!(craft_state.play_action(Action::Innovation));
 
         assert!(craft_state.play_action(Action::PreparatoryTouch));
-        assert_eq!(craft_state.quality, 2300);
+        assert_eq!(craft_state.quality, 2898);
 
         assert!(craft_state.play_action(Action::PreparatoryTouch));
-        assert_eq!(craft_state.quality, 3735);
+        assert_eq!(craft_state.quality, 4333);
 
         assert!(craft_state.play_action(Action::MastersMend));
 
         assert!(craft_state.play_action(Action::PreparatoryTouch));
-        assert_eq!(craft_state.quality, 5349);
 
         assert!(!craft_state.is_finished());
 
         assert_eq!(craft_state.progress, 1288);
-        assert_eq!(craft_state.quality, 5349);
+        assert_eq!(craft_state.quality, 5947);
         assert_eq!(craft_state.durability, 30);
         assert_eq!(craft_state.buffs.inner_quiet, 10);
         assert_eq!(craft_state.cp, 175);
@@ -243,11 +242,11 @@ mod tests {
             assert!(craft_state.play_action(a));
         }
 
-        assert_eq!(craft_state.quality, 5081);
+        assert_eq!(craft_state.quality, 5679);
 
         craft_state.set_next_step_outcome(0.0, StepState::Good);
         craft_state.play_action(Action::PreparatoryTouch);
-        assert_eq!(craft_state.quality, 7772);
+        assert_eq!(craft_state.quality, 8370);
     }
 
     #[test]
@@ -341,7 +340,7 @@ mod tests {
         }
 
         assert_eq!(craft_state.progress, 222);
-        assert_eq!(craft_state.quality, 488);
+        assert_eq!(craft_state.quality, 932);
         assert_eq!(craft_state.durability, 50);
     }
 
@@ -370,7 +369,7 @@ mod tests {
         }
 
         assert_eq!(craft_state.progress, 268);
-        assert_eq!(craft_state.quality, 565);
+        assert_eq!(craft_state.quality, 1079);
         assert_eq!(craft_state.durability, 50);
     }
 
@@ -498,6 +497,89 @@ mod tests {
         }
 
         assert_eq!(craft_state.progress, 3897);
+    }
+
+    #[test]
+    fn basic_flooring_test3() {
+        let params: CraftParams = CraftParams {
+            job_level: 94,
+            craftsmanship: 3957,
+            control: 3896,
+            cp: 563,
+
+            recipe_level: 685,
+
+            progress: 6300,
+            quality: 11400,
+            durability: 80,
+
+            gear_effects: Default::default(),
+        };
+
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![
+            Action::Reflect,
+            Action::Innovation,
+            Action::PreparatoryTouch,
+            Action::PrudentTouch,
+        ];
+
+        for a in actions_to_execute {
+            assert!(craft_state.play_action(a));
+        }
+
+        assert_eq!(craft_state.quality, 2610);
+    }
+
+    #[test]
+    fn basic_flooring_test4() {
+        let params: CraftParams = CraftParams {
+            job_level: 100,
+            craftsmanship: 4045,
+            control: 3902,
+            cp: 601,
+
+            recipe_level: 685,
+
+            progress: 6300,
+            quality: 11400,
+            durability: 80,
+
+            gear_effects: Default::default(),
+        };
+
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![
+            Action::Reflect,
+            Action::Innovation,
+            Action::PreparatoryTouch,
+            Action::PrudentTouch,
+            Action::GreatStrides,
+            Action::PreparatoryTouch,
+            Action::GreatStrides,
+            Action::Innovation,
+            Action::PreparatoryTouch,
+            Action::ImmaculateMend,
+            Action::GreatStrides,
+            Action::ByregotsBlessing,
+            Action::WasteNot,
+            Action::Veneration,
+            Action::Groundwork,
+            Action::Groundwork,
+            Action::Groundwork,
+            Action::Groundwork,
+            Action::Veneration,
+            Action::Groundwork,
+        ];
+
+        for a in actions_to_execute {
+            assert!(craft_state.play_action(a));
+        }
+
+        assert_eq!(craft_state.progress, 6585);
+        assert_eq!(craft_state.quality, 11400);
     }
 
     #[test]
