@@ -1316,6 +1316,58 @@ mod tests {
     }
 
     #[test]
+    fn benchmark_rotation2() {
+        let params = CraftParams {
+            job_level: 100,
+            craftsmanship: 4936,
+            control: 4876,
+            cp: 627,
+
+            recipe_level: 690,
+
+            progress: 6600,
+            quality: 12000,
+            durability: 80,
+
+            gear_effects: Default::default(),
+        };
+        let mut craft_state = params.new_craft();
+
+        let actions_to_execute = vec![
+            Action::MuscleMemory,
+            Action::Veneration,
+            Action::WasteNot,
+            Action::Groundwork,
+            Action::Groundwork,
+            Action::Groundwork,
+            Action::DelicateSynthesis,
+            Action::PreparatoryTouch,
+            Action::ImmaculateMend,
+            Action::Innovation,
+            Action::PrudentTouch,
+            Action::PreparatoryTouch,
+            Action::PreparatoryTouch,
+            Action::PreparatoryTouch,
+            Action::GreatStrides,
+            Action::Innovation,
+            Action::TrainedPerfection,
+            Action::PreparatoryTouch,
+            Action::GreatStrides,
+            Action::ByregotsBlessing,
+            Action::BasicSynthesis,
+        ];
+
+        for a in actions_to_execute {
+            assert!(craft_state.play_action(a));
+        }
+
+        assert!(craft_state.is_finished());
+        assert_eq!(craft_state.progress, 6705);
+        assert_eq!(craft_state.quality, 12028);
+        assert_eq!(craft_state.cp, 0);
+    }
+
+    #[test]
     fn full_expert_rotation_a() {
         let params = CraftParams {
             job_level: 90,
