@@ -316,6 +316,24 @@ mod tests {
     }
 
     #[test]
+    fn advanced_touch_can_combo_from_observe() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+
+        let actions_to_execute = vec![Action::Observe, Action::AdvancedTouch];
+
+        for a in actions_to_execute {
+            assert!(craft_state.play_action(a));
+        }
+
+        assert_eq!(craft_state.max_cp - craft_state.cp, 7 + 18);
+
+        // The combo was broken, so there should be no CP discount for
+        // Advanced Touch
+        assert!(craft_state.play_action(Action::AdvancedTouch));
+        assert_eq!(craft_state.max_cp - craft_state.cp, 7 + 18 + 46);
+    }
+
+    #[test]
     fn lvl90_recipe_test() {
         let params: CraftParams = CraftParams {
             job_level: 90,
