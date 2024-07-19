@@ -20,8 +20,10 @@ need the full breadth of functionality for simulating crafts, I highly suggest
 you just use Teamcraft simulator instead.
 
 ## Features
-:heavy_check_mark: Accurately simulates crafts with non-specialist actions at
-level 90
+:heavy_check_mark: Accurately simulates crafts with non-specialist actions.
+
+:heavy_check_mark: Supports simulation for all job levels up to 100, but actions
+will not individually validate if your job level meets the minimum requirement.
 
 :heavy_check_mark: Support for expert crafting
 
@@ -31,16 +33,14 @@ Touches" and "Good" conditions.
 :heavy_check_mark: Ability to manually set the next success and/or condition for
 the next step.
 
-:x: Byregot does not factor in job traits when using actions. All actions are
-assumed to be the versions seen at level 90.  For instance, a craft configured
-with job level 80 will see accurate values **except** when using "Careful
-Synthesis" or "Groundwork".
-
 :x: Byregot does not implement Trained Eye.
 
 :x: Byregot does not currently implement the specialist actions Careful
 Observation and Heart and Soul. This means Muscle Memory and Reflect can
 only be used on Normal conditions.
+
+:x: Byregot does not currently implement the specialist action Quick
+Innovation.
 
 ## Development
 Byregot is written in Rust, and so needs
