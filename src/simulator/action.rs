@@ -194,7 +194,7 @@ impl Change for IncreaseDurability {
 struct IncreaseInnerQuiet(u8);
 impl Change for IncreaseInnerQuiet {
     fn execute(&self, state: &mut state::CraftState) {
-        state.buffs.inner_quiet = cmp::min(10, state.buffs.inner_quiet + self.0);
+        state.increase_inner_quiet(self.0);
     }
 }
 
@@ -202,7 +202,7 @@ struct ConditionalIncreaseInnerQuiet(u8, f32);
 impl Change for ConditionalIncreaseInnerQuiet {
     fn execute(&self, state: &mut state::CraftState) {
         if state.is_step_success(self.1) {
-            state.buffs.inner_quiet = cmp::min(10, state.buffs.inner_quiet + self.0);
+            state.increase_inner_quiet(self.0);
         }
     }
 }
@@ -386,7 +386,7 @@ impl Change for PrudentRequirement {
 struct Reflect;
 impl Change for Reflect {
     fn execute(&self, state: &mut state::CraftState) {
-        state.buffs.inner_quiet = 2;
+        state.increase_inner_quiet(2);
         state.step_num += 1;
     }
     fn validate(&self, state: &state::CraftState) -> bool {
@@ -418,9 +418,9 @@ struct RefinedTouchConditionalInnerQuiet;
 impl Change for RefinedTouchConditionalInnerQuiet {
     fn execute(&self, state: &mut state::CraftState) {
         if state.basic_touch_combo == 1 {
-            state.buffs.inner_quiet += 2;
+            state.increase_inner_quiet(2);
         } else {
-            state.buffs.inner_quiet += 1;
+            state.increase_inner_quiet(1);
         }
     }
 }

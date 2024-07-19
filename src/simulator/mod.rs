@@ -38,6 +38,52 @@ mod tests {
     }
 
     #[test]
+    fn inner_quiet_should_only_be_lvl_11_and_above() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 10;
+
+        craft_state.set_next_step_outcome(0.0, StepState::Normal);
+        assert!(craft_state.play_action(Action::HastyTouch));
+        assert_eq!(craft_state.buffs.inner_quiet, 0);
+
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 11;
+
+        craft_state.set_next_step_outcome(0.0, StepState::Normal);
+        assert!(craft_state.play_action(Action::HastyTouch));
+        assert_eq!(craft_state.buffs.inner_quiet, 1);
+    }
+
+    #[test]
+    fn inner_quiet_should_cap_at_10() {
+        let mut craft_state = GENERIC_PARAMS.new_craft();
+        craft_state.job_level = 100;
+        craft_state.durability = 1000;
+        craft_state.buffs.inner_quiet = 10;
+
+        let actions_to_execute = vec![
+            Action::HastyTouch,
+            Action::DaringTouch,
+            Action::BasicTouch,
+            Action::StandardTouch,
+            Action::AdvancedTouch,
+            Action::PreparatoryTouch,
+            Action::PreciseTouch,
+            Action::DelicateSynthesis,
+            Action::TrainedFinesse,
+            Action::RefinedTouch,
+            Action::BasicTouch,
+            Action::RefinedTouch,
+        ];
+
+        for action in actions_to_execute {
+            craft_state.set_next_step_outcome(0.0, StepState::Good);
+            assert!(craft_state.play_action(action));
+            assert_eq!(craft_state.buffs.inner_quiet, 10);
+        }
+    }
+
+    #[test]
     fn reflect_test() {
         let params: CraftParams = CraftParams {
             job_level: 90,
@@ -992,12 +1038,12 @@ mod tests {
             (1.0, false),
         ];
 
-        for (success_rng, should_succeed) in validations {
+        for (rng, should_succeed) in validations {
             let mut craft_state = GENERIC_PARAMS.new_craft();
 
             assert!(craft_state.play_action(Action::MuscleMemory));
 
-            craft_state.set_next_step_outcome(success_rng, StepState::Normal);
+            craft_state.set_next_step_outcome(rng, StepState::Normal);
 
             assert!(craft_state.play_action(Action::HastyTouch));
 
@@ -1019,12 +1065,12 @@ mod tests {
             (1.0, false),
         ];
 
-        for (success_rng, should_succeed) in validations {
+        for (rng, should_succeed) in validations {
             let mut craft_state = GENERIC_PARAMS.new_craft();
 
             assert!(craft_state.play_action(Action::MuscleMemory));
 
-            craft_state.set_next_step_outcome(success_rng, StepState::Centered);
+            craft_state.set_next_step_outcome(rng, StepState::Centered);
 
             assert!(craft_state.play_action(Action::HastyTouch));
 

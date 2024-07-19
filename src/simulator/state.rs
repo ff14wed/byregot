@@ -1,3 +1,4 @@
+use std::cmp;
 use std::hash::{Hash, Hasher};
 
 use super::{tables, Action, Change};
@@ -226,6 +227,12 @@ impl CraftState {
         self.quality += quality_increase.floor() as u32;
     }
 
+    pub(super) fn increase_inner_quiet(&mut self, stacks: u8) {
+        if self.job_level >= 11 {
+            self.buffs.inner_quiet = cmp::min(10, self.buffs.inner_quiet + stacks);
+        }
+    }
+
     /// set_next_state_outcome sets the RNG outcome and/or StepState of the next
     /// step.  If failure_prob is less than the success threshold for the next
     /// action, the step will succeed.
@@ -345,7 +352,11 @@ impl CraftState {
             ),
             _ => (
                 &[StepState::Normal, StepState::Good, StepState::Excellent],
-                &[0.71, 0.25, 0.04],
+                if self.job_level < 63 {
+                    &[0.76, 0.20, 0.04]
+                } else {
+                    &[0.71, 0.25, 0.04]
+                },
             ),
         }
     }
